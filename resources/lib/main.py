@@ -131,14 +131,14 @@ def open_json(request=''):
             listitem.setProperty("IsPlayable", "true")
             listitem.setInfo("video", {"plot" : item['desc']})
             if Addon().getSettingInt('p2p_engine') == 0:
-                addDirectoryItem(plugin.handle, plugin.url_for(play, url="plugin://plugin.video.elementum/play?uri="+item['url']), listitem=listitem, isFolder=False)
+                addDirectoryItem(plugin.handle, plugin.url_for(play, url="plugin://plugin.video.elementum/play?uri="+item['url'], url_type=3), listitem=listitem, isFolder=False)
             elif Addon().getSettingInt('p2p_engine') == 1:
                 if 'stream_id' in item:
                     addDirectoryItem(plugin.handle, plugin.url_for(play, url=Addon().getSettingString('torrserver_url')+"/torrent/play/?link="+item['url']+"&file="+item['stream_id'], url_type=1), listitem=listitem, isFolder=False)
                 else:
                     addDirectoryItem(plugin.handle, plugin.url_for(play, url=Addon().getSettingString('torrserver_url')+"/torrent/play/?link="+item['url'], url_type=2), listitem=listitem, isFolder=False)
             elif Addon().getSettingInt('p2p_engine') == 2:
-                pass
+                Dialog().notification("Unsupported", "Torrserver Matrix currently unsupported", NOTIFICATION_ERROR)
         elif item['url_type'] == 'ace':
             listitem = ListItem(item['title'])
             listitem.setArt({"icon" : item['icon']})
