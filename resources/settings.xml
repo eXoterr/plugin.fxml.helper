@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <setting id="iptv.enabled" default="true" visible="false"/>
+    <setting id="iptv.channels_uri" default="plugin://plugin.fxml.helper/iptv/channels" visible="false"/>
+    <category label="32004" visible="false">
+        <setting label="32041" type="bool"   id="debug" default=""/>
+        <setting label="32042" type="text"   id="email" default=""/>
+        <setting label="32040" type="lsep"/>
+        <setting label="32048" type="text"   id="menu1" default=""/>
+        <setting label="32049" type="text"   id="menu2" default=""/>
+        <setting label="32043" type="text"   id="menu3" default=""/>
+        <setting label="32044" type="text"   id="menu4" default=""/>
+        <setting label="32045" type="text"   id="menu5" default=""/>
+        <setting label="32046" type="text"   id="menu6" default=""/>
+        <setting label="32047" type="text"   id="menu7" default=""/>
+    </category>
+    <category label="32002">
+        <setting label="32021" type="bool" id="merge" default="false"/>
+        <setting id="active_playlist" type="select" label="32018" lvalues="32011|32012|32013|32014|32015|32016|32017" />
+    </category>
+    <category label="32001">
+        <setting label="32011" type="text"   id="iptv1" default=""/>
+        <setting label="32012" type="text"   id="iptv2" default=""/>
+        <setting label="32013" type="text"   id="iptv3" default=""/>
+        <setting label="32014" type="text"   id="iptv4" default=""/>
+        <setting label="32015" type="text"   id="iptv5" default=""/>
+        <setting label="32016" type="text"   id="iptv6" default=""/>
+        <setting label="32017" type="text"   id="iptv7" default=""/>
+    </category>
+    <category label="32003">
+        <setting id="p2p_engine" type="select" label="32031" lvalues="32032|32033|32037" />
+        <setting label="32034" type="text"   id="torrserver_url" default="http://127.0.0.1:8090"/>
+        <setting label="32035" type="text"   id="acestream_url" default="http://127.0.0.1:6878"/>
+    </category>
+    <!-- <category label="32003">
+        <setting label="32011" type="text"   id="iptv1" default=""/>
+    </category> -->
+</settings>
