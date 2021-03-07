@@ -16,7 +16,7 @@ def parse_json(url, elements="", request=""):
     else:
         parsed_page = get_page(url)
     
-    if '<items>' in parsed_page:
+    if '<items>' in parsed_page or '<channels>' in parsed_page:
         parsed_page = parse_xml(parsed_page)
     elif '{' in parsed_page:
         parsed_page = json.loads(parsed_page)
@@ -40,6 +40,7 @@ def parse_json(url, elements="", request=""):
             #print(channel)
             current_channel = {"poster" : ""}
             if 'description' in channel:
+                #print(channel['description'])
                 current_channel.update({"desc" : clear_styles(channel['description'])})
             else:
                 current_channel.update({"desc" : ""})
@@ -133,7 +134,7 @@ def parse_xml(page, submenu=False):
     #     print(channels)
     #     return {"channels" : channels}
 
-    xml_page = fromstring(page.encode())
+    xml_page = fromstring(fix_xml(str(page)))
     channels = []
     # for se in xml_page.findall('menu').findall("*"):
     #     print(se.tag)
@@ -197,14 +198,6 @@ def parse_xml(page, submenu=False):
 
     return {"channels" : channels}
 
-
-
-
-            
-
-
-
-    return {"channels" : channels}
 
 def parse_m3u(playlist):
     playlist = re.sub(r'(#EXT.+\,)|(#EXT.+)', '', playlist)

@@ -170,7 +170,16 @@ def iptv_channels():
 def add_playlist():
     print(plugin.args)
     url = plugin.args['url'][0]
-    order = str(Dialog().select("Select playlist slot", ["Playlist 1", "Playlist 2", "Playlist 3", "Playlist 4", "Playlist 5", "Playlist 6", "Playlist 7"]) + 1)
+    menu_slots = []
+    for slot in range(1, 8):
+        current_slot = Addon().getSettingString('iptv'+str(slot))
+        if len(current_slot) > 0:
+            menu_slots.append(current_slot)
+        else:
+            menu_slots.append(f"Playlist {str(slot)}")
+    order = str(Dialog().select("Select playlist slot", menu_slots) + 1)
+    if Dialog().yesno("Are you sure?", f"Playlist will be added on slot {order}") == False:
+        return False
     Addon().setSetting(id=str('iptv'+order), value=url)
     Dialog().notification("Success", "playlist added to slot " + order, NOTIFICATION_INFO)
 
@@ -180,7 +189,17 @@ def add_menu_portal():
     url = plugin.args['url'][0]
     name = plugin.args['name'][0]
     icon = plugin.args['icon'][0]
-    order = str(Dialog().select("Select menu slot", ["Menu 1", "Menu 2", "Menu 3", "Menu 4", "Menu 5", "Menu 6", "Menu 7"]) + 1)
+    menu_slots = []
+    for slot in range(1, 8):
+        current_slot = Addon().getSettingString('menu'+str(slot))
+        if len(current_slot) > 0:
+            current_slot = json.loads(current_slot)
+            menu_slots.append(current_slot['name'])
+        else:
+            menu_slots.append(f"Menu slot {str(slot)}")
+    order = str(Dialog().select("Select menu slot", menu_slots) + 1)
+    if Dialog().yesno("Are you sure?", f"Portal will be added on slot {order}") == False:
+        return False
     Addon().setSetting(id=str('menu'+order), value=json.dumps({"url" : url, "name" : name, "icon" : icon}))
     Dialog().notification("Success", "\""+name + "\" added to menu slot " + order, NOTIFICATION_INFO)
 

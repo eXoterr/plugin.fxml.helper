@@ -5,10 +5,11 @@ from urllib.parse import urlencode, urlparse
 from uuid import getnode 
 
 def clear_styles(text):
+    text = re.sub(r'(<style .?\>|.+<\/style>)|(<.*?>)', ' ', text, flags=re.S) 
     text = text.replace('\n', '')
     text = text.replace('\r', '')
     text = text.replace('\r\n', '')
-    return re.sub(r'(<style.+\>(.+)(?:\n|\r\n?)((?:(?:\n|\r\n?).+)+)<\/style>)|(<.*?>)', ' ', text, flags=re.S) 
+    return text
 
 def get_mac():
     return ''.join(re.findall('..', '%012x' % getnode()))
@@ -43,4 +44,5 @@ def extract_msg_from_alert(msg):
     return re.split(r'alert\((.+)\)', msg)[1]
 
 def fix_xml(xml_doc):
-    return re.sub(r'<.+>.+(\s+\&\s+).+</.+>', ' ', xml_doc)
+    #if '<?xml version="1.0"' not in xml_doc:
+    return re.sub(r'(\s+\&\s+)|(\&nbsp;)|(\&gt;)|(\&copy;)|(\&quot;)|(\&rsquo;)', ' ', xml_doc)
