@@ -3,7 +3,7 @@ from xbmcgui import ListItem, Dialog, NOTIFICATION_INFO, NOTIFICATION_ERROR, NOT
 from xbmcplugin import addDirectoryItem, endOfDirectory, setResolvedUrl
 from xbmcaddon import Addon
 from resources.lib.parsers import parse_json
-from resources.lib.utils import get_page
+from resources.lib.utils import get_page, get_stream
 import json
 import sys
 
@@ -73,7 +73,26 @@ def play():
         listitem.setPath(plugin.args['url'][0])
         setResolvedUrl(plugin.handle, True, listitem)
         
-        
+
+
+@plugin.route('/extract_and_play')
+def extract_and_play():
+    if int(plugin.args['url_type'][0]) == 2:
+        files = json.loads(get_page(plugin.args['url'][0]))
+        files_list = []
+        for i in files['FileStats']:
+            files_list.append(i['Path'])
+        file_id = Dialog().select('Choose a file to play', files_list)
+        listitem = ListItem()
+        listitem.setPath(plugin.args['url'][0]+"&file="+str(file_id))
+        setResolvedUrl(plugin.handle, True, listitem)
+    else:
+        listitem = ListItem()
+        print(f"extracting stream {plugin.args['order'][0]} from {plugin.args['url'][0]} with page type {plugin.args['page_type'][0]}")
+        listitem.setPath(get_stream(plugin.args['url'][0], plugin.args['order'][0], plugin.args['page_type'][0]))
+        setResolvedUrl(plugin.handle, True, listitem)
+
+
 
 @plugin.route('/open_json')
 def open_json(request=''):
@@ -123,7 +142,7 @@ def open_json(request=''):
             listitem.setArt({"poster" : item['poster']})
             listitem.setProperty("IsPlayable", "true")
             listitem.setInfo("video", {"plot" : item['desc']})
-            addDirectoryItem(plugin.handle, plugin.url_for(play, url=item['url'], url_type=0), listitem=listitem, isFolder=False)
+            addDirectoryItem(plugin.handle, plugin.url_for(extract_and_play, url=item['parent_page'], order=item['order'] ,page_type=item['page_type'], url_type=0), listitem=listitem, isFolder=False)
         elif item['url_type'] == 'magnet':
             listitem = ListItem(item['title'])
             listitem.setArt({"icon" : item['icon']})

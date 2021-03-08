@@ -3,6 +3,7 @@ import cfscrape
 import json
 from urllib.parse import urlencode, urlparse
 from uuid import getnode 
+from defusedxml.cElementTree import fromstring
 
 def clear_styles(text):
     text = re.sub(r'(<style .?\>|.+<\/style>)|(<.*?>)', ' ', text, flags=re.S) 
@@ -26,7 +27,16 @@ def get_page(url):
     page = scraper.get(url, params={"box_mac" : get_mac()})
     print(page.url)
     raw_page = page.text
-    return raw_page
+    return [raw_page, page.url]
+
+def get_stream(url, order, page_type):
+    scraper = cfscrape.create_scraper()
+    page = scraper.get(url, params={"box_mac" : get_mac()})
+    raw_page = page.text
+    if page_type == 'json':
+        return json.loads(raw_page)['channels'][int(order)]['stream_url']
+    elif page_type == 'xml':
+        return fromstring(raw_page).findall('channel')[int(order)].find('stream_url').text
 
 def do_search(url, request):
     if 'youtube.com' in url or 'youtu.be' in url:
@@ -38,7 +48,7 @@ def do_search(url, request):
     scraper = cfscrape.create_scraper()
     page = scraper.get(url, params={"search" : request, "box_mac" : get_mac()})
     raw_page = page.text
-    return raw_page
+    return [raw_page, page.url]
 
 def extract_msg_from_alert(msg):
     return re.split(r'alert\((.+)\)', msg)[1]

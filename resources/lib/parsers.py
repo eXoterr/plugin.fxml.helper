@@ -12,16 +12,23 @@ def parse_json(url, elements="", request=""):
 
         parsed_page = json.loads(json.dumps(elements[0]))
     elif request != "":
-        parsed_page = do_search(url, request)
+        page_data = do_search(url, request)
+        parsed_page = page_data[0]
+        parent_url = page_data[1]
     else:
-        parsed_page = get_page(url)
+        page_data = get_page(url)
+        parsed_page = page_data[0]
+        parent_url = page_data[1]
     
     if '<items>' in parsed_page or '<channels>' in parsed_page:
         parsed_page = parse_xml(parsed_page)
+        page_type = 'xml'
     elif '{' in parsed_page:
         parsed_page = json.loads(parsed_page)
+        page_type = 'json'
     elif '#EXTM3U' in parsed_page:
         parsed_page = parse_m3u(parsed_page)
+        page_type = 'm3u'
 
     # try:
     #     parsed_page = json.loads(parsed_page)
@@ -32,6 +39,7 @@ def parse_json(url, elements="", request=""):
     #         parsed_page = parse_m3u(parsed_page)
 
     final_data = []
+    current_channel_index = 0
     print(parsed_page)
     if 'channels' in parsed_page:
             
@@ -101,7 +109,7 @@ def parse_json(url, elements="", request=""):
                             streams_for_load.append({"title" : str(quality), "stream_url" : streams[str(quality)]['url']})
                         current_channel.update({"submenu" : {"channels" : streams_for_load},  "url_type" : "submenu"})
                 else:
-                    current_channel.update({"url" : channel['stream_url'], "url_type" : "stream"})
+                    current_channel.update({"url" : channel['stream_url'], "url_type" : "stream", "parent_page" : parent_url, "page_type" : page_type, "order" : current_channel_index})
             else:
                 if 'description' in channel:
                     current_channel.update({"url_type" : "alert", "msg" : clear_styles(channel['description'])})
@@ -115,9 +123,11 @@ def parse_json(url, elements="", request=""):
                 current_channel.update({"icon" : ""})
 
             final_data.append(current_channel)
-
+            current_channel_index += 1
         if 'next_page_url' in parsed_page and len(parsed_page['next_page_url']) > 0:
             final_data.append({"title" : "Next page >","icon" : "", "desc": "", "url" : parsed_page['next_page_url'], "url_type" : "link", "poster" : ""})
+
+
 
         print(final_data)
         return final_data
