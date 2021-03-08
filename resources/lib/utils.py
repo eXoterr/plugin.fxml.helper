@@ -4,6 +4,7 @@ import json
 from urllib.parse import urlencode, urlparse
 from uuid import getnode 
 from defusedxml.cElementTree import fromstring
+from xbmcaddon import Addon
 
 def clear_styles(text):
     text = re.sub(r'(<style .?\>|.+<\/style>)|(<.*?>)', ' ', text, flags=re.S) 
@@ -24,7 +25,10 @@ def get_page(url):
     if 'https://' in url:
         url = url.replace('https://', 'http://')
     scraper = cfscrape.create_scraper()
-    page = scraper.get(url, params={"box_mac" : get_mac()})
+    if len(Addon().getSettingString('email')) > 0:
+        page = scraper.get(url, params={"box_mac" : get_mac(), "box_user" : Addon().getSettingString('email')})
+    else:
+        page = scraper.get(url, params={"box_mac" : get_mac()})
     print(page.url)
     raw_page = page.text
     return [raw_page, page.url]
@@ -46,7 +50,10 @@ def do_search(url, request):
     if 'https://' in url:
         url = url.replace('https://', 'http://')
     scraper = cfscrape.create_scraper()
-    page = scraper.get(url, params={"search" : request, "box_mac" : get_mac()})
+    if len(Addon().getSettingString('email')) > 0:
+        page = scraper.get(url, params={"search" : request, "box_mac" : get_mac(), "box_user" : Addon().getSettingString('email')})
+    else:
+        page = scraper.get(url, params={"search" : request, "box_mac" : get_mac()})
     raw_page = page.text
     return [raw_page, page.url]
 
