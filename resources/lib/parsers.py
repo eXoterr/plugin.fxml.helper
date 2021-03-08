@@ -220,9 +220,9 @@ def parse_m3u(playlist):
     #print(len(clean_lines))
     for item in range(0, len(clean_lines) - 1, 2):
         if 'http://' in clean_lines[item+1] or 'https://' in clean_lines[item+1] or 'udp://' in clean_lines[item+1]:
-            channels.append({"title" : clean_lines[item], "stream_url" : clean_lines[item+1]})
+            channels.append({"title" : clean_lines[item], "stream_url" : clean_lines[item+1], "page_type" : "m3u"})
         else:
-            channels.append({"title" : clean_lines[item+1], "stream_url" : clean_lines[item+2]})
+            channels.append({"title" : clean_lines[item+1], "stream_url" : clean_lines[item+2], "page_type" : "m3u"})
         
     #print(channels)
 

@@ -25,6 +25,8 @@ def index():
             listitem.setArt({"icon" : menu_item['icon']})
             listitem.addContextMenuItems([("Remove from menu", f'RunPlugin("plugin://plugin.fxml.helper/menu/remove?id={str(i)}")')])
             addDirectoryItem(plugin.handle, plugin.url_for(open_json, url=menu_item['url'], search=False), listitem=listitem, isFolder=True)
+        else:
+            print(menu_item_json+"is equal 0")
 
     # listitem = ListItem("SpiderXML")
     # listitem.setArt({"icon" : "http://spiderxml.com/spidericon.png"})
@@ -142,7 +144,10 @@ def open_json(request=''):
             listitem.setArt({"poster" : item['poster']})
             listitem.setProperty("IsPlayable", "true")
             listitem.setInfo("video", {"plot" : item['desc']})
-            addDirectoryItem(plugin.handle, plugin.url_for(extract_and_play, url=item['parent_page'], order=item['order'] ,page_type=item['page_type'], url_type=0), listitem=listitem, isFolder=False)
+            if item['page_type'] == "m3u":
+                addDirectoryItem(plugin.handle, plugin.url_for(play, url=item['url'], url_type=0), listitem=listitem, isFolder=False)
+            else:
+                addDirectoryItem(plugin.handle, plugin.url_for(extract_and_play, url=item['parent_page'], order=item['order'] ,page_type=item['page_type'], url_type=0), listitem=listitem, isFolder=False)
         elif item['url_type'] == 'magnet':
             listitem = ListItem(item['title'])
             listitem.setArt({"icon" : item['icon']})

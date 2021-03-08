@@ -33,7 +33,7 @@ def get_page(url):
     raw_page = page.text
     return [raw_page, page.url]
 
-def get_stream(url, order, page_type):
+def get_stream(url, order=0, page_type=''):
     scraper = cfscrape.create_scraper()
     page = scraper.get(url, params={"box_mac" : get_mac()})
     raw_page = page.text
@@ -41,6 +41,8 @@ def get_stream(url, order, page_type):
         return json.loads(raw_page)['channels'][int(order)]['stream_url']
     elif page_type == 'xml':
         return fromstring(raw_page).findall('channel')[int(order)].find('stream_url').text
+    elif page_type == "m3u":
+        return url
 
 def do_search(url, request):
     if 'youtube.com' in url or 'youtu.be' in url:
