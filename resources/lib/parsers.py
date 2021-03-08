@@ -1,4 +1,4 @@
-import cfscrape
+from resources.lib import cfscrape
 import json
 from resources.lib.utils import clear_styles, get_page, do_search, extract_msg_from_alert, fix_xml
 import re

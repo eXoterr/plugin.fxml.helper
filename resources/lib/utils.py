@@ -1,5 +1,5 @@
 import re
-import cfscrape
+from resources.lib import cfscrape
 import json
 from urllib.parse import urlencode, urlparse
 from uuid import getnode 

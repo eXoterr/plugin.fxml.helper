@@ -5,6 +5,9 @@
     <import addon="script.module.routing"/>
     <import addon="script.module.defusedxml"/>
     <import addon="service.iptv.manager"/>
+    <import addon="script.module.requests"/>
+    <import addon="script.module.tzlocal"/>
+    <import addon="script.module.six"/>
   </requires>
   <extension point="xbmc.python.pluginsource" library="addon.py">
     <provides>video</provides>
