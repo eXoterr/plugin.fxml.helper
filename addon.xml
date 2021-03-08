@@ -3,7 +3,6 @@
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
     <import addon="script.module.routing" version="0.2.3"/>
-    <import addon="script.module.cfscrape" version="1.6.9"/>
     <import addon="script.module.defusedxml" version="0.6.0"/>
     <import addon="service.iptv.manager" version="0.2.3"/>
   </requires>
@@ -17,7 +16,7 @@
     <language>en</language> <!-- the language of the videos or other content the plugin provides, may be omitted in case the addon does not provide any content -->
     <platform>all</platform>
     <license>GPL-3.0-or-later</license>
-    <source>http://github.com/you/plugin.addon.id</source>
+    <source>https://github.com/eXoterr/plugin.fxml.helper</source>
     <news>v1.1.0 (8/03/2021)
       [new] extractable streams links
       [fix] bug fixes
