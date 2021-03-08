@@ -29,7 +29,7 @@ def get_page(url):
         page = scraper.get(url, params={"box_mac" : get_mac(), "box_user" : Addon().getSettingString('email')})
     else:
         page = scraper.get(url, params={"box_mac" : get_mac()})
-    print(page.url)
+    print("requesting page: \""+page.url+"\"")
     raw_page = page.text
     return [raw_page, page.url]
 
@@ -50,6 +50,7 @@ def do_search(url, request):
     if 'https://' in url:
         url = url.replace('https://', 'http://')
     scraper = cfscrape.create_scraper()
+    print("requesting page: \""+page.url+"\"")
     if len(Addon().getSettingString('email')) > 0:
         page = scraper.get(url, params={"search" : request, "box_mac" : get_mac(), "box_user" : Addon().getSettingString('email')})
     else:

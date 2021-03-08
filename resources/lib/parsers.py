@@ -7,8 +7,8 @@ from urllib.parse import urlencode, quote_plus
 
 def parse_json(url, elements="", request=""):
     if url == 'submenu':
-        print("elements---------=-")
-        print(elements)
+        #print("elements---------=-")
+        #print(elements)
 
         parsed_page = json.loads(json.dumps(elements[0]))
     elif request != "":
@@ -40,7 +40,7 @@ def parse_json(url, elements="", request=""):
 
     final_data = []
     current_channel_index = 0
-    print(parsed_page)
+    #print(parsed_page)
     if 'channels' in parsed_page:
             
         #print(parse_elements)
@@ -103,7 +103,7 @@ def parse_json(url, elements="", request=""):
                 elif channel['stream_url'] == 'md5hash':
                     if 'parser' in channel:
                         streams = json.loads(get_page(channel['parser']))
-                        print(streams)
+                        #print(streams)
                         streams_for_load = []
                         for quality in streams.keys():
                             streams_for_load.append({"title" : str(quality), "stream_url" : streams[str(quality)]['url']})
@@ -129,7 +129,7 @@ def parse_json(url, elements="", request=""):
 
 
 
-        print(final_data)
+        #print(final_data)
         return final_data
 
 
@@ -161,8 +161,8 @@ def parse_xml(page, submenu=False):
                         for se in element.findall("*"):
                             submenu_dict.update({se.tag : clear_styles(str(se.text))})
                         submenu_list.append(submenu_dict)
-                    print("submenu_dict ====")
-                    print(submenu_list)
+                    #print("submenu_dict ====")
+                    #print(submenu_list)
                     current_channel.update({"submenu" : submenu_list})
                 else:
                     if subelement.tag != 'submenu':
@@ -187,8 +187,8 @@ def parse_xml(page, submenu=False):
                         for se in element.findall("*"):
                             submenu_dict.update({se.tag : clear_styles(str(se.text))})
                         submenu_list.append(submenu_dict)
-                    print("submenu_dict ====")
-                    print(submenu_list)
+                    #print("submenu_dict ====")
+                    #print(submenu_list)
                     current_channel.update({"submenu" : submenu_list})
                 else:
                     if subelement.tag != 'submenu':
@@ -203,8 +203,8 @@ def parse_xml(page, submenu=False):
         
     
             
-    print("formed xml")
-    print(channels)
+    #print("formed xml")
+    #print(channels)
 
     return {"channels" : channels}
 
