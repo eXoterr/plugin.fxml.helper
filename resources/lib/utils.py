@@ -25,10 +25,11 @@ def get_page(url):
     if 'https://' in url:
         url = url.replace('https://', 'http://')
     scraper = cfscrape.create_scraper()
+    cookie = {"sid" : Addon().getSettingString('fork_cookie')}
     if len(Addon().getSettingString('email')) > 0:
-        page = scraper.get(url, params={"box_mac" : get_mac(), "box_user" : Addon().getSettingString('email')})
+        page = scraper.get(url, params={"box_mac" : get_mac(), "box_hardware" : "Kodi FXML Helper", "box_user" : Addon().getSettingString('email'), "initial" : f"aForkPlayer2.5|{get_mac()}|Android sdk 25|androidapi|0"}, cookies=cookie)
     else:
-        page = scraper.get(url, params={"box_mac" : get_mac()})
+        page = scraper.get(url, params={"box_mac" : get_mac(), "box_hardware" : "Kodi FXML Helper", "initial" : f"aForkPlayer2.5|{get_mac()}|Android sdk 25|androidapi|0"}, cookies=cookie)
     #print("requesting page: \""+page.url+"\"")
     raw_page = page.text
     return [raw_page, page.url]
@@ -52,16 +53,18 @@ def do_search(url, request):
     if 'https://' in url:
         url = url.replace('https://', 'http://')
     scraper = cfscrape.create_scraper()
+    cookie = {"sid" : Addon().getSettingString('fork_cookie')}
     #print("requesting page: \""+page.url+"\"")
     if len(Addon().getSettingString('email')) > 0:
-        page = scraper.get(url, params={"search" : request, "box_mac" : get_mac(), "box_user" : Addon().getSettingString('email')})
+        page = scraper.get(url, params={"search" : request, "box_mac" : get_mac(), "box_hardware" : "Kodi FXML Helper", "box_user" : Addon().getSettingString('email'), "initial" : f"aForkPlayer2.5|{get_mac()}|Android sdk 25|androidapi|0"}, cookies=cookie)
     else:
-        page = scraper.get(url, params={"search" : request, "box_mac" : get_mac()})
+        page = scraper.get(url, params={"search" : request, "box_mac" : get_mac(), "box_hardware" : "Kodi FXML Helper", "initial" : f"aForkPlayer2.5|{get_mac()}|Android sdk 25|androidapi|0"}, cookies=cookie)
     raw_page = page.text
     return [raw_page, page.url]
 
 def extract_msg_from_alert(msg):
-    return re.split(r'alert\((.+)\)', msg)[1]
+    print(re.split(r'alert\((.+)\)|cmd:info\((.+)\);', msg))
+    return re.split(r'alert\((.+)\)|cmd:info\((.+)\);', msg)[2]
 
 def fix_xml(xml_doc):
     #if '<?xml version="1.0"' not in xml_doc:

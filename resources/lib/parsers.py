@@ -41,7 +41,7 @@ def parse_json(url, elements="", request=""):
     final_data = []
     current_channel_index = 0
     #print(parsed_page)
-    if 'channels' in parsed_page:
+    if 'channels' in parsed_page and parsed_page['channels'] is not None:
             
         #print(parse_elements)
         for channel in parsed_page['channels']:
@@ -53,7 +53,10 @@ def parse_json(url, elements="", request=""):
             else:
                 current_channel.update({"desc" : ""})
             if 'title' in channel:
-                current_channel.update({"title" : clear_styles(channel['title'])})
+                if 'style' in channel and 'default' in channel['style'] and 'before' in channel['style']['default']:
+                    current_channel.update({"title" :  clear_styles(channel['title']) +" [" + clear_styles(channel['style']['default']['before']) + "]"})
+                else:
+                    current_channel.update({"title" : clear_styles(channel['title'])})
             elif 'details' in channel and channel['details'] != False:
                 if 'name' in channel['details']:
                     current_channel.update({"title" : clear_styles(channel['details']['name'])})
@@ -69,8 +72,8 @@ def parse_json(url, elements="", request=""):
                     current_channel.update({"poster" : clear_styles(channel['details']['img'])})
                 else:
                     current_channel.update({"poster" : ""})
-            else:
-                current_channel.update({"title" : "No title"})
+            elif 'template' in channel:
+                current_channel.update({"title" : clear_styles(channel['template'])})
             if 'playlist_url' in channel:
                 if channel['playlist_url'] == 'submenu':
                     #print("submenu type is " + str(type(channel['submenu'])))
@@ -81,8 +84,10 @@ def parse_json(url, elements="", request=""):
                     current_channel.update({"url_type" : "alert", "msg" : clear_styles(channel['description'])})
                 elif 'magnet:?xt=' in channel['playlist_url']:
                     current_channel.update({"url" : quote_plus(channel['playlist_url']), "url_type" : "magnet"})
-                elif re.match(r'alert\((.+)\)', channel['playlist_url']) is not None:
+                elif re.match(r'alert\((.+)\)|cmd:info\((.+)\);', channel['playlist_url']) is not None:
                     current_channel.update({"url_type" : "alert", "msg" : extract_msg_from_alert(clear_styles(channel['playlist_url']))})
+                elif channel['playlist_url'] == "cmdSetSync":
+                    current_channel.update({"url_type" : "alert", "msg" : "command link, ignoring"})
                 else:
                     current_channel.update({"url" : channel['playlist_url'], "url_type" : "link"})
             elif 'details' in channel and channel['details'] != False and 'infohash' in channel['details']:
@@ -124,13 +129,15 @@ def parse_json(url, elements="", request=""):
 
             final_data.append(current_channel)
             current_channel_index += 1
-        if 'next_page_url' in parsed_page and len(parsed_page['next_page_url']) > 0:
+        if 'next_page_url' in parsed_page and parsed_page['next_page_url'] is not None and len(parsed_page['next_page_url']) > 0:
             final_data.append({"title" : "Next page >","icon" : "", "desc": "", "url" : parsed_page['next_page_url'], "url_type" : "link", "poster" : ""})
 
 
 
         print(final_data)
         return final_data
+    else:
+        return [{"title" : "[error] No parseable page found", "url_type" : "none", "icon" : "", "poster" : "", "desc" : "error"}]
 
 
 def parse_xml(page, submenu=False):

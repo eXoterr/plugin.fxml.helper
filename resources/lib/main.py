@@ -15,6 +15,10 @@ def index():
     listitem = ListItem("SpiderXML (search engine)")
     listitem.setArt({"icon" : "http://spiderxml.com/spidericon.png"})
     addDirectoryItem(plugin.handle, plugin.url_for(open_json, url="http://spiderxml.com/", search=False), listitem=listitem, isFolder=True)
+    
+    listitem = ListItem("Forkplayer.tv Account")
+    listitem.setArt({"icon" : "http://forkplayer.tv/favicon.ico"})
+    addDirectoryItem(plugin.handle, plugin.url_for(open_json, url="http://forkplayer.tv/xml/account.php?act=info/", search=False), listitem=listitem, isFolder=True)
 
     for i in range(1, 8):
         #print(Addon().getSettingString('menu'+str(i)))
@@ -27,6 +31,7 @@ def index():
             addDirectoryItem(plugin.handle, plugin.url_for(open_json, url=menu_item['url'], search=False), listitem=listitem, isFolder=True)
         else:
             print(menu_item_json+"is equal 0")
+
 
     # listitem = ListItem("SpiderXML")
     # listitem.setArt({"icon" : "http://spiderxml.com/spidericon.png"})
@@ -238,6 +243,22 @@ def rem_menu_portal():
 def alert():
     print(plugin.args)
     Dialog().ok(plugin.args['title'][0], str(plugin.args['msg'][0]))
+
+@plugin.route('/do_auth')
+def auth():
+    login = Addon().getSettingString('email')
+    password = Addon().getSettingString('password')
+    if len(login) == 0 or len(password) == 0:
+        return  Dialog().notification("Save settings!", "Enter your login and pass and save settings before trying to auth!", icon=NOTIFICATION_ERROR)
+    response = json.loads(get_page(f"http://forkplayer.tv/xml/account.php?act=submit&login={login}&password={password}")[0])
+    if 'error' in response:
+        Dialog().notification("Error!", response['error'], icon=NOTIFICATION_ERROR)
+    else:
+        Addon().setSetting('fork_cookie', response['setcookie']['sid'])
+        Dialog().notification("Success", "Authorised!", icon=NOTIFICATION_INFO)
+
+
+
 
 def run():
     plugin.run()

@@ -16,6 +16,14 @@ msgstr ""
 "Language: en\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+msgctxt "#32050"
+msgid "Password"
+msgstr "Password"
+
+msgctxt "#32051"
+msgid "[Login in]"
+msgstr "[Login in]"
+
 msgctxt "#32001"
 msgid "Playlists"
 msgstr "Playlists"
