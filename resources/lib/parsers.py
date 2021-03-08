@@ -129,7 +129,7 @@ def parse_json(url, elements="", request=""):
 
 
 
-        #print(final_data)
+        print(final_data)
         return final_data
 
 

@@ -61,7 +61,7 @@ def index():
 
 @plugin.route('/play')
 def play():
-    if int(plugin.args['url_type'][0]) == 2:
+    if 'url_type' in plugin.args and int(plugin.args['url_type'][0]) == 2:
         files = json.loads(get_page(plugin.args['url'][0]))
         files_list = []
         for i in files['FileStats']:
