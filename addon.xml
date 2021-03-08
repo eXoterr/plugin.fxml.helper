@@ -11,8 +11,8 @@
     <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-    <summary lang="en_GB">Your add-on's summary</summary>
-    <description lang="en_GB">Your add-on's description</description>
+    <summary lang="en_GB">Parser for FXML based sites</summary>
+    <description lang="en_GB">Parser for FXML based sites</description>
     <disclaimer lang="en_GB"></disclaimer>
     <language>en</language> <!-- the language of the videos or other content the plugin provides, may be omitted in case the addon does not provide any content -->
     <platform>all</platform>
