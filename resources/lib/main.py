@@ -6,6 +6,9 @@ from resources.lib.parsers import parse_json
 from resources.lib.utils import get_page, get_stream
 import json
 import sys
+from xbmcvfs import translatePath
+from xbmc import executebuiltin
+
 
 plugin = routing.Plugin() 
 
@@ -116,6 +119,7 @@ def open_json(request=''):
     if plugin.args['search'][0] == "True":
         return open_json(request=Dialog().input("Enter your data..."))
     for item in page:
+        #print(item)
         if item['url_type'] == 'link':
             #print('render started')
             listitem = ListItem(item['title'])
@@ -138,17 +142,19 @@ def open_json(request=''):
             listitem.setInfo("video", {"plot" : item['desc']})
             addDirectoryItem(plugin.handle, plugin.url_for(open_json, url='submenu', search=False, elements=json.dumps(item['submenu'])), listitem, isFolder=True)
         elif item['url_type'] == 'none':
-            listitem = ListItem(item['title'])
-            listitem.setArt({"icon" : item['icon']})
-            listitem.setArt({"poster" : item['poster']})
-            listitem.setInfo("video", {"plot" : item['desc']})
-            addDirectoryItem(plugin.handle, "", listitem=listitem, isFolder=False)
+            # listitem = ListItem(item['title'])
+            # listitem.setArt({"icon" : item['icon']})
+            # listitem.setArt({"poster" : item['poster']})
+            # listitem.setInfo("video", {"plot" : item['desc']})
+            # addDirectoryItem(plugin.handle, "", listitem=listitem, isFolder=False)
+            pass
         elif item['url_type'] == 'stream':
             listitem = ListItem(item['title'])
             listitem.setArt({"icon" : item['icon']})
             listitem.setArt({"poster" : item['poster']})
             listitem.setProperty("IsPlayable", "true")
             listitem.setInfo("video", {"plot" : item['desc']})
+            listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["parent_page"]}&order={item["order"]}&page_type={item["page_type"]}&title={item["title"]}&item_type=stream&url_type=0")')])
             if item['page_type'] == "m3u":
                 addDirectoryItem(plugin.handle, plugin.url_for(play, url=item['url'], url_type=0), listitem=listitem, isFolder=False)
             else:
@@ -160,20 +166,29 @@ def open_json(request=''):
             listitem.setProperty("IsPlayable", "true")
             listitem.setInfo("video", {"plot" : item['desc']})
             if Addon().getSettingInt('p2p_engine') == 0:
+                listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={item["title"]}&item_type=magnet&url_type=3")')])
                 addDirectoryItem(plugin.handle, plugin.url_for(play, url="plugin://plugin.video.elementum/play?uri="+item['url'], url_type=3), listitem=listitem, isFolder=False)
             elif Addon().getSettingInt('p2p_engine') == 1:
                 if 'stream_id' in item:
-                    addDirectoryItem(plugin.handle, plugin.url_for(play, url=Addon().getSettingString('torrserver_url')+"/torrent/play/?link="+item['url']+"&file="+item['stream_id'], url_type=1), listitem=listitem, isFolder=False)
+                    listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={item["title"]}&item_type=magnet&url_type=1")')])
+                    addDirectoryItem(plugin.handle, plugin.url_for(play_torr, hash=item['url'], url_type=1, stream_id=item['stream_id']), listitem=listitem, isFolder=False)
                 else:
-                    addDirectoryItem(plugin.handle, plugin.url_for(play, url=Addon().getSettingString('torrserver_url')+"/torrent/play/?link="+item['url'], url_type=2), listitem=listitem, isFolder=False)
+                    listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={item["title"]}&item_type=magnet&url_type=2")')])
+                    addDirectoryItem(plugin.handle, plugin.url_for(play_torr, hash=item['url'], url_type=2), listitem=listitem, isFolder=False)
             elif Addon().getSettingInt('p2p_engine') == 2:
-                Dialog().notification("Unsupported", "Torrserver Matrix currently unsupported", NOTIFICATION_ERROR)
+                if 'stream_id' in item:
+                    listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={item["title"]}&item_type=magnet&url_type=1")')])
+                    addDirectoryItem(plugin.handle, plugin.url_for(play_torr, hash=item['url'], url_type=1, stream_id=item['stream_id']), listitem=listitem, isFolder=False)
+                else:
+                    listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&title={item["title"]}&item_type=magnet&url_type=2")')])
+                    addDirectoryItem(plugin.handle, plugin.url_for(play_torr, hash=item['url'], url_type=2), listitem=listitem, isFolder=False)
         elif item['url_type'] == 'ace':
             listitem = ListItem(item['title'])
             listitem.setArt({"icon" : item['icon']})
             listitem.setArt({"poster" : item['poster']})
             listitem.setProperty("IsPlayable", "true")
             listitem.setInfo("video", {"plot" : item['desc']})
+            #listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={Addon().getSettingString("acestream_url")+"/ace/getstream?infohash="+item["url"]}&title={item["title"]}&item_type=ace")')])
             addDirectoryItem(plugin.handle, plugin.url_for(play, url=Addon().getSettingString('acestream_url')+"/ace/getstream?infohash="+item['url']), listitem=listitem, isFolder=False)
         elif item['url_type'] == 'alert':
             listitem = ListItem(item['title'])
@@ -184,6 +199,44 @@ def open_json(request=''):
             addDirectoryItem(plugin.handle, plugin.url_for(alert, title=item['title'], msg=item['msg']), listitem=listitem, isFolder=False)
 
     endOfDirectory(plugin.handle)
+
+@plugin.route('/play_t')
+def play_torr():
+    torr_ver = Addon().getSettingInt('p2p_engine')
+    if 'url_type' in plugin.args and int(plugin.args['url_type'][0]) == 2:
+        if torr_ver == 0:
+            listitem = ListItem()
+            listitem.setPath("plugin://plugin.video.elementum/play?uri="+plugin.args['hash'][0])
+            setResolvedUrl(plugin.handle, True, listitem)
+        elif torr_ver == 1:
+            files = json.loads(get_page(Addon().getSettingString('torrserver_url')+'/torrent/play/?link='+plugin.args['hash'][0])[0])
+            files_list = []
+            for i in files['FileStats']:
+                files_list.append(i['Path'])
+            file_id = Dialog().select('Choose a file to play', files_list)
+            listitem = ListItem()
+            listitem.setPath(Addon().getSettingString("torrserver_url")+"/torrent/play/?link="+plugin.args["hash"][0]+"&file="+str(file_id))
+            setResolvedUrl(plugin.handle, True, listitem)
+        elif torr_ver == 2:
+            files = json.loads(get_page(Addon().getSettingString('torrserver_url')+'/stream/fname?link='+plugin.args['hash'][0]+"&stat")[0])
+            files_list = []
+            for i in files['file_stats']:
+                files_list.append(i['path'])
+            file_id = Dialog().select('Choose a file to play', files_list)
+            listitem = ListItem()
+            listitem.setPath(Addon().getSettingString('torrserver_url')+"/stream/fname?link="+plugin.args['hash'][0]+"&index="+str(file_id + 1)+"&play")
+            setResolvedUrl(plugin.handle, True, listitem)
+    else:
+        listitem = ListItem()
+        if torr_ver == 0:
+            listitem.setPath("plugin://plugin.video.elementum/play?uri="+plugin.args['hash'][0])
+            setResolvedUrl(plugin.handle, True, listitem)
+        elif torr_ver == 1:
+            listitem.setPath(Addon().getSettingString('torrserver_url')+"/torrent/play/?link="+plugin.args['hash'][0]+"&file="+str(int(plugin.args['stream_id'][0])))
+            setResolvedUrl(plugin.handle, True, listitem)
+        elif torr_ver == 2:
+            listitem.setPath(listitem.setPath(Addon().getSettingString('torrserver_url')+"/stream/fname?link="+plugin.args['hash'][0]+"&index="+str(int(plugin.args['stream_id'][0])+1)+"&play"))
+            setResolvedUrl(plugin.handle, True, listitem)
 
 
 @plugin.route('/iptv/channels')
@@ -257,7 +310,22 @@ def auth():
         Addon().setSetting('fork_cookie', response['setcookie']['sid'])
         Dialog().notification("Success", "Authorised!", icon=NOTIFICATION_INFO)
 
-
+@plugin.route('/library/add')
+def add_to_lib():
+    item_type = plugin.args['item_type'][0]
+    title = Dialog().input("Enter name of the file...")
+    if item_type == "stream":
+        url = f"plugin://plugin.fxml.helper/extract_and_play?order={plugin.args['order'][0]}&url={plugin.args['url'][0]}&page_type={plugin.args['page_type'][0]}&url_type=0"
+    elif item_type == "magnet":
+        url = f"plugin://plugin.fxml.helper/play_t?url_type={plugin.args['url_type'][0]}&hash={plugin.args['url'][0]}&url_type={plugin.args['url_type'][0]}"
+    elif item_type == 'ace':
+        url = f"plugin://plugin.fxml.helper/play?url={plugin.args['url_type'][0]}"
+    folder = Addon().getSettingString('library_folder')
+    f = open(translatePath(folder+title+".strm"), "w")
+    f.write(url)
+    f.close()
+    executebuiltin('UpdateLibrary("video")')
+    Dialog().notification("Success", "Film added to kodi library", NOTIFICATION_INFO)
 
 
 def run():

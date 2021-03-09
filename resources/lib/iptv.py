@@ -48,5 +48,6 @@ class IPTVManager:
             url = Addon().getSettingString('iptv'+str(Addon().getSettingInt('active_playlist') + 1)) #will be changed in new settings format
             channels = parse_json(url)
             for channel in channels:
+                #print(channel)
                 pl_channels.append({"name" : channel['title'], "stream" : channel['url']})
         return dict(version=1, streams=pl_channels)

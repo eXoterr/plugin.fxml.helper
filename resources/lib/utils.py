@@ -36,15 +36,34 @@ def get_page(url):
 
 def get_stream(url, order=0, page_type=''):
     scraper = cfscrape.create_scraper()
-    page = scraper.get(url, params={"box_mac" : get_mac()})
-    raw_page = page.text
+    if '{' in url:  
+            res_raw = json.loads(url)
+            resolutions = []
+            for res in res_raw.keys():
+                resolutions.append(res_raw[res])
+            #print(type(resolutions[int(order)]))
+            return resolutions[int(order)]['url']
+    else:
+        page = scraper.get(url, params={"box_mac" : get_mac(), "box_hardware" : "Kodi FXML Helper", "initial" : f"aForkPlayer2.5|{get_mac()}|Android sdk 25|androidapi|0"})
+        raw_page = page.text
     if page_type == 'json':
-        return json.loads(raw_page)['channels'][int(order)]['stream_url']
+        if 'channels' in json.loads(raw_page):
+            return json.loads(raw_page)['channels'][int(order)]['stream_url']
+        else:
+            res_raw = json.loads(raw_page)
+            resolutions = []
+            for res in res_raw.keys():
+                resolutions.append(res_raw[res])
+            #print(type(resolutions[int(order)]))
+            return resolutions[int(order)]['url']
     elif page_type == 'xml':
         return fromstring(raw_page).findall('channel')[int(order)].find('stream_url').text
     elif page_type == "m3u":
         return url
-
+    else:
+        url = get_page(url)
+        print(url)
+        return url[0]
 def do_search(url, request):
     if 'youtube.com' in url or 'youtu.be' in url:
         return '{"title" : "youtube not supported"}'
@@ -63,8 +82,10 @@ def do_search(url, request):
     return [raw_page, page.url]
 
 def extract_msg_from_alert(msg):
-    print(re.split(r'alert\((.+)\)|cmd:info\((.+)\);', msg))
-    return re.split(r'alert\((.+)\)|cmd:info\((.+)\);', msg)[2]
+    if re.match(r'alert\((.+)\)', msg):
+        return re.split(r'alert\((.+)\)|cmd:info\((.+)\);', msg)[1]
+    else:
+        return re.split(r'alert\((.+)\)|cmd:info\((.+)\);', msg)[2]
 
 def fix_xml(xml_doc):
     #if '<?xml version="1.0"' not in xml_doc:

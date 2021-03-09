@@ -20,6 +20,10 @@ msgctxt "#32050"
 msgid "Password"
 msgstr "Password"
 
+msgctxt "#32052"
+msgid "[Library folder]"
+msgstr "[Library folder]"
+
 msgctxt "#32051"
 msgid "[Login in]"
 msgstr "[Login in]"

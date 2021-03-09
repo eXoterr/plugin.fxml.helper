@@ -4,13 +4,23 @@ from resources.lib.utils import clear_styles, get_page, do_search, extract_msg_f
 import re
 from defusedxml.ElementTree import parse, fromstring
 from urllib.parse import urlencode, quote_plus
+from xbmcaddon import Addon
 
 def parse_json(url, elements="", request=""):
     if url == 'submenu':
         #print("elements---------=-")
         #print(elements)
 
-        parsed_page = json.loads(json.dumps(elements[0]))
+        if len(json.loads(elements[0])) > 1:
+            page_data = json.loads(elements[0])
+        else:
+            page_data = [json.loads(elements[0]), url]
+        print("---page_data---")
+        print(page_data)
+        print(type(page_data[0]))
+        print(type(page_data[1]))
+        parsed_page = page_data[0]
+        parent_url = page_data[1]
     elif request != "":
         page_data = do_search(url, request)
         parsed_page = page_data[0]
@@ -29,6 +39,8 @@ def parse_json(url, elements="", request=""):
     elif '#EXTM3U' in parsed_page:
         parsed_page = parse_m3u(parsed_page)
         page_type = 'm3u'
+    elif isinstance(parsed_page, dict):
+        page_type = 'json'
 
     # try:
     #     parsed_page = json.loads(parsed_page)
@@ -74,6 +86,8 @@ def parse_json(url, elements="", request=""):
                     current_channel.update({"poster" : ""})
             elif 'template' in channel:
                 current_channel.update({"title" : clear_styles(channel['template'])})
+            else:
+                current_channel.update({"title" : "couldn't load title"})
             if 'playlist_url' in channel:
                 if channel['playlist_url'] == 'submenu':
                     #print("submenu type is " + str(type(channel['submenu'])))
@@ -92,6 +106,8 @@ def parse_json(url, elements="", request=""):
                     current_channel.update({"url" : channel['playlist_url'], "url_type" : "link"})
             elif 'details' in channel and channel['details'] != False and 'infohash' in channel['details']:
                 current_channel.update({"url" : channel['details']['infohash'], "url_type" : "ace"})
+            elif 'stream_url' in channel and re.match(r'(http:\/\/.+\/ace\/manifest.m3u8\?id\=)|(\/ace\/getstream\?infohash\=)', channel['stream_url']):
+                current_channel.update({"url" : re.sub(r'(http:\/\/.+\/ace\/manifest.m3u8\?id\=)|(\/ace\/getstream\?infohash\=)', '', channel['stream_url']), "url_type" : "ace"})
             elif 'details' in parsed_page and parsed_page['details'] != False and 'magnet' in parsed_page['details']:
                 current_channel.update({"url" : parsed_page['details']['magnet'], "url_type" : "magnet"})
                 if 'details' in channel and channel['details'] != False and 'tor-1.1.77' in channel['details'] and 'id' in channel['details']['tor-1.1.77']:
@@ -104,17 +120,29 @@ def parse_json(url, elements="", request=""):
                     streams_for_load = []
                     for quality in streams.keys():
                         streams_for_load.append({"title" : str(quality), "stream_url" : streams[str(quality)]['url']})
-                    current_channel.update({"submenu" : {"channels" : streams_for_load},  "url_type" : "submenu"})
+                    current_channel.update({"submenu" : [{"channels" : streams_for_load}, channel['stream_url']],  "url_type" : "submenu"})
                 elif channel['stream_url'] == 'md5hash':
                     if 'parser' in channel:
-                        streams = json.loads(get_page(channel['parser']))
+                        try:
+                            streams = json.loads(get_page(channel['parser'])[0])
+                            if streams is not None:
+                                for quality in streams.keys():
+                                    streams_for_load.append({"title" : str(quality), "stream_url" : streams[str(quality)]['url']})
+                                current_channel.update({"submenu" : [{"channels" : streams_for_load}, channel['parser']],  "url_type" : "submenu"})
+                            else:
+                                current_channel.update({"url_type" : "alert", "msg" : "could not extract url"})
+                        except json.JSONDecodeError:
+                            current_channel.update({"url" : get_page(channel['parser'])[0], "url_type" : "stream", "parent_page" : channel['parser'], "page_type" : "direct", "order" : 0})
                         #print(streams)
                         streams_for_load = []
-                        for quality in streams.keys():
-                            streams_for_load.append({"title" : str(quality), "stream_url" : streams[str(quality)]['url']})
-                        current_channel.update({"submenu" : {"channels" : streams_for_load},  "url_type" : "submenu"})
+
+                elif '/ace/getstream?magnet=' in channel['stream_url']:
+                    magnet = re.sub(r'(http:\/\/.+\/ace\/getstream\?magnet\=)|\&tid=.+|\&file=.+', '', channel['stream_url'])
+                    current_channel.update({"url" : magnet, "url_type" : "magnet"})
+
                 else:
                     current_channel.update({"url" : channel['stream_url'], "url_type" : "stream", "parent_page" : parent_url, "page_type" : page_type, "order" : current_channel_index})
+                    
             else:
                 if 'description' in channel:
                     current_channel.update({"url_type" : "alert", "msg" : clear_styles(channel['description'])})
@@ -134,9 +162,10 @@ def parse_json(url, elements="", request=""):
 
 
 
-        print(final_data)
+        #print(final_data)
         return final_data
     else:
+        #print(parsed_page)
         return [{"title" : "[error] No parseable page found", "url_type" : "none", "icon" : "", "poster" : "", "desc" : "error"}]
 
 
