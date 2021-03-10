@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.fxml.helper" name="FXML Helper" version="1.2.0" provider-name="eXoterr">
+<addon id="plugin.fxml.helper" name="FXML Helper" version="1.2.1" provider-name="eXoterr">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
     <import addon="script.module.routing"/>
@@ -20,13 +20,14 @@
     <platform>all</platform>
     <license>GPL-3.0-or-later</license>
     <source>https://github.com/eXoterr/plugin.fxml.helper</source>
-    <news>v1.2.0 (10/03/2021)
-      [new] forkplayer website login feature
+    <news>v1.2.1 (10/03/2021)
+      [new] forkplayer.tv website login feature
       [new] static links for torrents
-      [new] option to add stream, acestream or torrent content in library (Films only)
+      [new] option to add stream or torrent content in library (Films only)
       [new] auto replace public acestream server with server from addon settings
       [new] initial support torrserver 1.2
       [fix] bugs on some xml sites
+      [fix] streams in submenu
       [improved] infohash extracting
       [improved] json parsing on some sites
     </news>

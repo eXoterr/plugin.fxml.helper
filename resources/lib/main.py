@@ -133,8 +133,12 @@ def open_json(request=''):
             listitem.setArt({"poster" : item['poster']})
             listitem.setArt({"fanart" : item['background']})
             listitem.setInfo("video", {"plot" : item['desc']})
+            if 'icon' in item['icon'] and len(item['icon']) > 0:
+                icon = item['icon']
+            else:
+                icon = ""
             listitem.addContextMenuItems([('Add as playlist', f'RunPlugin("plugin://plugin.fxml.helper/iptv/add?url={item["url"]}&handle={plugin.handle}")'),
-                                            ('Add to main menu', f'RunPlugin("plugin://plugin.fxml.helper/menu/add?url={item["url"]}&handle={plugin.handle}&name={item["title"]}&icon={item["icon"]}")')])
+                                            ('Add to main menu', f'RunPlugin("plugin://plugin.fxml.helper/menu/add?url={item["url"]}&handle={plugin.handle}&name={item["title"]}&icon={icon}")')])
             addDirectoryItem(plugin.handle, plugin.url_for(open_json, url=item['url'], search=False), listitem, isFolder=True)
         elif item['url_type'] == 'search':
             listitem = ListItem(item['title'])

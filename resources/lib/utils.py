@@ -15,6 +15,7 @@ def clear_styles(text):
     text = text.replace('\r\n', '')
     text = text.replace('Установите Acestream или Torrserve', '') #fork-portal
     text = text.replace('Установите Ace Stream или Torrserve', '') #fork-portal
+    text = re.sub(r' +', ' ', text)
     return text
 
 def get_mac():
