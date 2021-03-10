@@ -5,12 +5,16 @@ from urllib.parse import urlencode, urlparse
 from uuid import getnode 
 from defusedxml.cElementTree import fromstring
 from xbmcaddon import Addon
+import requests
+from xbmcgui import Dialog
 
 def clear_styles(text):
     text = re.sub(r'(<style .?\>|.+<\/style>)|(<.*?>)', ' ', text, flags=re.S) 
     text = text.replace('\n', '')
     text = text.replace('\r', '')
     text = text.replace('\r\n', '')
+    text = text.replace('Установите Acestream или Torrserve', '') #fork-portal
+    text = text.replace('Установите Ace Stream или Torrserve', '') #fork-portal
     return text
 
 def get_mac():
@@ -89,4 +93,8 @@ def extract_msg_from_alert(msg):
 
 def fix_xml(xml_doc):
     #if '<?xml version="1.0"' not in xml_doc:
-    return re.sub(r'(\s+\&\s+)|(\&nbsp;)|(\&gt;)|(\&copy;)|(\&quot;)|(\&rsquo;)', ' ', xml_doc)
+    xml_doc = xml_doc.replace('</items></items>', '</items>')
+    return re.sub(r'(\s+\&\s+)|(\&nbsp;)|(\&gt;)|(\&copy;)|(\&quot;)|(\&rsquo;)|(\<background-image\>.+\<\/background-image\>)|(\<typeList\>.+\<\/typeList\>)', ' ', xml_doc)
+
+def correct_spaces(data):
+    return data.replace('/', '.')

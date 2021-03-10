@@ -98,6 +98,8 @@ def parse_json(url, elements="", request=""):
                     current_channel.update({"url_type" : "alert", "msg" : clear_styles(channel['description'])})
                 elif 'magnet:?xt=' in channel['playlist_url']:
                     current_channel.update({"url" : quote_plus(channel['playlist_url']), "url_type" : "magnet"})
+                elif ':?xt=urn:btih:' in channel['playlist_url']:
+                    current_channel.update({"url" : quote_plus('magnet'+channel['playlist_url']), "url_type" : "magnet"})
                 elif re.match(r'alert\((.+)\)|cmd:info\((.+)\);', channel['playlist_url']) is not None:
                     current_channel.update({"url_type" : "alert", "msg" : extract_msg_from_alert(clear_styles(channel['playlist_url']))})
                 elif channel['playlist_url'] == "cmdSetSync":
@@ -106,8 +108,8 @@ def parse_json(url, elements="", request=""):
                     current_channel.update({"url" : channel['playlist_url'], "url_type" : "link"})
             elif 'details' in channel and channel['details'] != False and 'infohash' in channel['details']:
                 current_channel.update({"url" : channel['details']['infohash'], "url_type" : "ace"})
-            elif 'stream_url' in channel and re.match(r'(http:\/\/.+\/ace\/manifest.m3u8\?id\=)|(\/ace\/getstream\?infohash\=)', channel['stream_url']):
-                current_channel.update({"url" : re.sub(r'(http:\/\/.+\/ace\/manifest.m3u8\?id\=)|(\/ace\/getstream\?infohash\=)', '', channel['stream_url']), "url_type" : "ace"})
+            elif 'stream_url' in channel and re.match(r'(http:\/\/.+\/ace\/manifest.m3u8\?id\=)|(\/ace\/getstream\?infohash\=)|(http:\/\/.+\/ace\/manifest.m3u8\?infohash\=)', channel['stream_url']):
+                current_channel.update({"url" : re.sub(r'(http:\/\/.+\/ace\/manifest.m3u8\?id\=)|(\/ace\/getstream\?infohash\=)|(http:\/\/.+\/ace\/manifest.m3u8\?infohash\=)', '', channel['stream_url']), "url_type" : "ace"})
             elif 'details' in parsed_page and parsed_page['details'] != False and 'magnet' in parsed_page['details']:
                 current_channel.update({"url" : parsed_page['details']['magnet'], "url_type" : "magnet"})
                 if 'details' in channel and channel['details'] != False and 'tor-1.1.77' in channel['details'] and 'id' in channel['details']['tor-1.1.77']:
@@ -140,6 +142,9 @@ def parse_json(url, elements="", request=""):
                     magnet = re.sub(r'(http:\/\/.+\/ace\/getstream\?magnet\=)|\&tid=.+|\&file=.+', '', channel['stream_url'])
                     current_channel.update({"url" : magnet, "url_type" : "magnet"})
 
+                elif 'magnet:?xt=' in channel['stream_url']:
+                    current_channel.update({"url" : channel['stream_url'], "url_type" : "magnet"})
+
                 else:
                     current_channel.update({"url" : channel['stream_url'], "url_type" : "stream", "parent_page" : parent_url, "page_type" : page_type, "order" : current_channel_index})
                     
@@ -150,6 +155,10 @@ def parse_json(url, elements="", request=""):
                     current_channel.update({"url_type" : "none"})
             if 'search_on' in channel:
                 current_channel.update({"url_type" : "search"})
+            if 'background-image' in parsed_page:
+                current_channel.update({"background" : parsed_page['background-image']})
+            else:
+                current_channel.update({"background" : ""})
             if 'logo_30x30' in channel:
                 current_channel.update({"icon" : channel['logo_30x30']})
             else:
@@ -179,7 +188,7 @@ def parse_xml(page, submenu=False):
     #     print("-----channels----------")
     #     print(channels)
     #     return {"channels" : channels}
-
+    #print(fix_xml(str(page)))
     xml_page = fromstring(fix_xml(str(page)))
     channels = []
     # for se in xml_page.findall('menu').findall("*"):
@@ -255,7 +264,7 @@ def parse_m3u(playlist):
             clean_lines.append(playlist_lines[line])
     #print(len(clean_lines))
     for item in range(0, len(clean_lines) - 1, 2):
-        if 'http://' in clean_lines[item+1] or 'https://' in clean_lines[item+1] or 'udp://' in clean_lines[item+1]:
+        if 'http://' in clean_lines[item+1] or 'https://' in clean_lines[item+1] or 'udp://' in clean_lines[item+1] or 'rtmp://' in clean_lines[item+1]:
             channels.append({"title" : clean_lines[item], "stream_url" : clean_lines[item+1], "page_type" : "m3u"})
         else:
             channels.append({"title" : clean_lines[item+1], "stream_url" : clean_lines[item+2], "page_type" : "m3u"})

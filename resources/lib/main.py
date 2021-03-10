@@ -3,11 +3,13 @@ from xbmcgui import ListItem, Dialog, NOTIFICATION_INFO, NOTIFICATION_ERROR, NOT
 from xbmcplugin import addDirectoryItem, endOfDirectory, setResolvedUrl
 from xbmcaddon import Addon
 from resources.lib.parsers import parse_json
-from resources.lib.utils import get_page, get_stream
+from resources.lib.utils import get_page, get_stream, correct_spaces
 import json
 import sys
 from xbmcvfs import translatePath
 from xbmc import executebuiltin
+from urllib.parse import quote_plus, unquote_plus
+import os
 
 
 plugin = routing.Plugin() 
@@ -17,7 +19,7 @@ def index():
 
     listitem = ListItem("SpiderXML (search engine)")
     listitem.setArt({"icon" : "http://spiderxml.com/spidericon.png"})
-    addDirectoryItem(plugin.handle, plugin.url_for(open_json, url="http://spiderxml.com/", search=False), listitem=listitem, isFolder=True)
+    addDirectoryItem(plugin.handle, plugin.url_for(open_json, url="http://spider.forkplayer.tv/search/?web=&onlyxml=1/", search=False), listitem=listitem, isFolder=True)
     
     listitem = ListItem("Forkplayer.tv Account")
     listitem.setArt({"icon" : "http://forkplayer.tv/favicon.ico"})
@@ -125,6 +127,7 @@ def open_json(request=''):
             listitem = ListItem(item['title'])
             listitem.setArt({"icon" : item['icon']})
             listitem.setArt({"poster" : item['poster']})
+            listitem.setArt({"fanart" : item['background']})
             listitem.setInfo("video", {"plot" : item['desc']})
             listitem.addContextMenuItems([('Add as playlist', f'RunPlugin("plugin://plugin.fxml.helper/iptv/add?url={item["url"]}&handle={plugin.handle}")'),
                                             ('Add to main menu', f'RunPlugin("plugin://plugin.fxml.helper/menu/add?url={item["url"]}&handle={plugin.handle}&name={item["title"]}&icon={item["icon"]}")')])
@@ -132,12 +135,14 @@ def open_json(request=''):
         elif item['url_type'] == 'search':
             listitem = ListItem(item['title'])
             listitem.setArt({"icon" : item['icon']})
+            listitem.setArt({"fanart" : item['background']})
             listitem.setArt({"poster" : item['poster']})
             listitem.setInfo("video", {"plot" : item['desc']})
             addDirectoryItem(plugin.handle, plugin.url_for(open_json, url=item['url'], search=True), listitem, isFolder=True)
         elif item['url_type'] == 'submenu':
             listitem = ListItem(item['title'])
             listitem.setArt({"icon" : item['icon']})
+            listitem.setArt({"fanart" : item['background']})
             listitem.setArt({"poster" : item['poster']})
             listitem.setInfo("video", {"plot" : item['desc']})
             addDirectoryItem(plugin.handle, plugin.url_for(open_json, url='submenu', search=False, elements=json.dumps(item['submenu'])), listitem, isFolder=True)
@@ -151,6 +156,7 @@ def open_json(request=''):
         elif item['url_type'] == 'stream':
             listitem = ListItem(item['title'])
             listitem.setArt({"icon" : item['icon']})
+            listitem.setArt({"fanart" : item['background']})
             listitem.setArt({"poster" : item['poster']})
             listitem.setProperty("IsPlayable", "true")
             listitem.setInfo("video", {"plot" : item['desc']})
@@ -163,29 +169,31 @@ def open_json(request=''):
             listitem = ListItem(item['title'])
             listitem.setArt({"icon" : item['icon']})
             listitem.setArt({"poster" : item['poster']})
+            listitem.setArt({"fanart" : item['background']})
             listitem.setProperty("IsPlayable", "true")
             listitem.setInfo("video", {"plot" : item['desc']})
             if Addon().getSettingInt('p2p_engine') == 0:
-                listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={item["title"]}&item_type=magnet&url_type=3")')])
+                listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={quote_plus(item["title"])}&item_type=magnet&url_type=3")')])
                 addDirectoryItem(plugin.handle, plugin.url_for(play, url="plugin://plugin.video.elementum/play?uri="+item['url'], url_type=3), listitem=listitem, isFolder=False)
             elif Addon().getSettingInt('p2p_engine') == 1:
                 if 'stream_id' in item:
-                    listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={item["title"]}&item_type=magnet&url_type=1")')])
+                    listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={quote_plus(item["title"])}&item_type=magnet&url_type=1")')])
                     addDirectoryItem(plugin.handle, plugin.url_for(play_torr, hash=item['url'], url_type=1, stream_id=item['stream_id']), listitem=listitem, isFolder=False)
                 else:
-                    listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={item["title"]}&item_type=magnet&url_type=2")')])
+                    listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={quote_plus(item["title"])}&item_type=magnet&url_type=2")')])
                     addDirectoryItem(plugin.handle, plugin.url_for(play_torr, hash=item['url'], url_type=2), listitem=listitem, isFolder=False)
             elif Addon().getSettingInt('p2p_engine') == 2:
                 if 'stream_id' in item:
-                    listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={item["title"]}&item_type=magnet&url_type=1")')])
+                    listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={quote_plus(item["title"])}&item_type=magnet&url_type=1")')])
                     addDirectoryItem(plugin.handle, plugin.url_for(play_torr, hash=item['url'], url_type=1, stream_id=item['stream_id']), listitem=listitem, isFolder=False)
                 else:
-                    listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&title={item["title"]}&item_type=magnet&url_type=2")')])
+                    listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&title={quote_plus(item["title"])}&item_type=magnet&url_type=2")')])
                     addDirectoryItem(plugin.handle, plugin.url_for(play_torr, hash=item['url'], url_type=2), listitem=listitem, isFolder=False)
         elif item['url_type'] == 'ace':
             listitem = ListItem(item['title'])
             listitem.setArt({"icon" : item['icon']})
             listitem.setArt({"poster" : item['poster']})
+            listitem.setArt({"fanart" : item['background']})
             listitem.setProperty("IsPlayable", "true")
             listitem.setInfo("video", {"plot" : item['desc']})
             #listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={Addon().getSettingString("acestream_url")+"/ace/getstream?infohash="+item["url"]}&title={item["title"]}&item_type=ace")')])
@@ -193,6 +201,7 @@ def open_json(request=''):
         elif item['url_type'] == 'alert':
             listitem = ListItem(item['title'])
             listitem.setArt({"icon" : item['icon']})
+            listitem.setArt({"fanart" : item['background']})
             listitem.setArt({"poster" : item['poster']})
             #listitem.setProperty("IsPlayable", "true")
             listitem.setInfo("video", {"plot" : item['desc']})
@@ -313,7 +322,10 @@ def auth():
 @plugin.route('/library/add')
 def add_to_lib():
     item_type = plugin.args['item_type'][0]
-    title = Dialog().input("Enter name of the file...")
+    if Dialog().yesno("Change default title?", f"Current title is \"{unquote_plus(plugin.args['title'][0])}\"") == True:
+        title = Dialog().input("Enter new title...")
+    else:
+        title = unquote_plus(plugin.args['title'][0])
     if item_type == "stream":
         url = f"plugin://plugin.fxml.helper/extract_and_play?order={plugin.args['order'][0]}&url={plugin.args['url'][0]}&page_type={plugin.args['page_type'][0]}&url_type=0"
     elif item_type == "magnet":
@@ -321,7 +333,7 @@ def add_to_lib():
     elif item_type == 'ace':
         url = f"plugin://plugin.fxml.helper/play?url={plugin.args['url_type'][0]}"
     folder = Addon().getSettingString('library_folder')
-    f = open(translatePath(folder+title+".strm"), "w")
+    f = open(translatePath(os.path.join(folder, correct_spaces(title+".strm"))), "w")
     f.write(url)
     f.close()
     executebuiltin('UpdateLibrary("video")')
