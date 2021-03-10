@@ -90,7 +90,6 @@ def play():
 
 @plugin.route('/extract_and_play')
 def extract_and_play():
-    print('submenu item '+str(plugin.args['suborder_i'][0]))
     if int(plugin.args['url_type'][0]) == 2:
         files = json.loads(get_page(plugin.args['url'][0]))
         files_list = []
