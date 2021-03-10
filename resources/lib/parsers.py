@@ -108,12 +108,13 @@ def parse_json(url, elements="", request=""):
                     current_channel.update({"url" : channel['playlist_url'], "url_type" : "link"})
             elif 'details' in channel and channel['details'] != False and 'infohash' in channel['details']:
                 current_channel.update({"url" : channel['details']['infohash'], "url_type" : "ace"})
-            elif 'stream_url' in channel and re.match(r'(http:\/\/.+\/ace\/manifest.m3u8\?id\=)|(\/ace\/getstream\?infohash\=)|(http:\/\/.+\/ace\/manifest.m3u8\?infohash\=)', channel['stream_url']):
-                current_channel.update({"url" : re.sub(r'(http:\/\/.+\/ace\/manifest.m3u8\?id\=)|(\/ace\/getstream\?infohash\=)|(http:\/\/.+\/ace\/manifest.m3u8\?infohash\=)', '', channel['stream_url']), "url_type" : "ace"})
             elif 'details' in parsed_page and parsed_page['details'] != False and 'magnet' in parsed_page['details']:
                 current_channel.update({"url" : parsed_page['details']['magnet'], "url_type" : "magnet"})
-                if 'details' in channel and channel['details'] != False and 'tor-1.1.77' in channel['details'] and 'id' in channel['details']['tor-1.1.77']:
-                    current_channel.update({"stream_id" : channel['details']['tor-1.1.77']['id']})
+                #print(channel)
+                if 'details' in channel and channel['details'] != False and 'ace' in channel['details'] and 'id' in channel['details']['ace']:
+                    current_channel.update({"stream_id" : channel['details']['ace']['id']})
+            elif 'stream_url' in channel and re.match(r'(http:\/\/.+\/ace\/manifest.m3u8\?id\=)|(\/ace\/getstream\?infohash\=)|(http:\/\/.+\/ace\/manifest.m3u8\?infohash\=)', channel['stream_url']):
+                current_channel.update({"url" : re.sub(r'(http:\/\/.+\/ace\/manifest.m3u8\?id\=)|(\/ace\/getstream\?infohash\=)|(http:\/\/.+\/ace\/manifest.m3u8\?infohash\=)', '', channel['stream_url']), "url_type" : "ace"})
             elif 'stream_url' in channel:
                 if len(channel['stream_url']) == 0:
                     current_channel.update({"url_type" : "alert", "msg" : clear_styles(channel['description'])})
@@ -140,6 +141,8 @@ def parse_json(url, elements="", request=""):
 
                 elif '/ace/getstream?magnet=' in channel['stream_url']:
                     magnet = re.sub(r'(http:\/\/.+\/ace\/getstream\?magnet\=)|\&tid=.+|\&file=.+', '', channel['stream_url'])
+                    if 'details' in channel and channel['details'] != False and 'ace' in channel['details'] and 'id' in channel['details']['ace']:
+                        current_channel.update({"stream_id" : channel['details']['ace']['id']})
                     current_channel.update({"url" : magnet, "url_type" : "magnet"})
 
                 elif 'magnet:?xt=' in channel['stream_url']:
@@ -167,7 +170,7 @@ def parse_json(url, elements="", request=""):
             final_data.append(current_channel)
             current_channel_index += 1
         if 'next_page_url' in parsed_page and parsed_page['next_page_url'] is not None and len(parsed_page['next_page_url']) > 0:
-            final_data.append({"title" : "Next page >","icon" : "", "desc": "", "url" : parsed_page['next_page_url'], "url_type" : "link", "poster" : ""})
+            final_data.append({"title" : "Next page >","icon" : "", "desc": "", "url" : parsed_page['next_page_url'], "url_type" : "link", "poster" : "", "background" : ""})
 
 
 

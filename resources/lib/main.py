@@ -10,6 +10,7 @@ from xbmcvfs import translatePath
 from xbmc import executebuiltin
 from urllib.parse import quote_plus, unquote_plus
 import os
+import re
 
 
 plugin = routing.Plugin() 
@@ -176,11 +177,12 @@ def open_json(request=''):
                 listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={quote_plus(item["title"])}&item_type=magnet&url_type=3")')])
                 addDirectoryItem(plugin.handle, plugin.url_for(play, url="plugin://plugin.video.elementum/play?uri="+item['url'], url_type=3), listitem=listitem, isFolder=False)
             elif Addon().getSettingInt('p2p_engine') == 1:
+                print(item)
                 if 'stream_id' in item:
                     listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={quote_plus(item["title"])}&item_type=magnet&url_type=1")')])
                     addDirectoryItem(plugin.handle, plugin.url_for(play_torr, hash=item['url'], url_type=1, stream_id=item['stream_id']), listitem=listitem, isFolder=False)
                 else:
-                    listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={quote_plus(item["title"])}&item_type=magnet&url_type=2")')])
+                    listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&title={quote_plus(item["title"])}&item_type=magnet&url_type=2")')])
                     addDirectoryItem(plugin.handle, plugin.url_for(play_torr, hash=item['url'], url_type=2), listitem=listitem, isFolder=False)
             elif Addon().getSettingInt('p2p_engine') == 2:
                 if 'stream_id' in item:
@@ -212,11 +214,16 @@ def open_json(request=''):
 @plugin.route('/play_t')
 def play_torr():
     torr_ver = Addon().getSettingInt('p2p_engine')
+    print("hash is: " + plugin.args['hash'][0])
+    print("torr ver is: "+str(torr_ver))
+    if '&title=' in plugin.args['hash'][0]:
+        print("truncated \"title\" form hash")
+        plugin.args['hash'][0] = re.sub(r'(\&title\=.+)', '', plugin.args['hash'][0])
     if 'url_type' in plugin.args and int(plugin.args['url_type'][0]) == 2:
         if torr_ver == 0:
             listitem = ListItem()
             listitem.setPath("plugin://plugin.video.elementum/play?uri="+plugin.args['hash'][0])
-            setResolvedUrl(plugin.handle, True, listitem)
+            
         elif torr_ver == 1:
             files = json.loads(get_page(Addon().getSettingString('torrserver_url')+'/torrent/play/?link='+plugin.args['hash'][0])[0])
             files_list = []
@@ -225,7 +232,7 @@ def play_torr():
             file_id = Dialog().select('Choose a file to play', files_list)
             listitem = ListItem()
             listitem.setPath(Addon().getSettingString("torrserver_url")+"/torrent/play/?link="+plugin.args["hash"][0]+"&file="+str(file_id))
-            setResolvedUrl(plugin.handle, True, listitem)
+            
         elif torr_ver == 2:
             files = json.loads(get_page(Addon().getSettingString('torrserver_url')+'/stream/fname?link='+plugin.args['hash'][0]+"&stat")[0])
             files_list = []
@@ -234,18 +241,18 @@ def play_torr():
             file_id = Dialog().select('Choose a file to play', files_list)
             listitem = ListItem()
             listitem.setPath(Addon().getSettingString('torrserver_url')+"/stream/fname?link="+plugin.args['hash'][0]+"&index="+str(file_id + 1)+"&play")
-            setResolvedUrl(plugin.handle, True, listitem)
+        setResolvedUrl(plugin.handle, True, listitem)
     else:
         listitem = ListItem()
         if torr_ver == 0:
             listitem.setPath("plugin://plugin.video.elementum/play?uri="+plugin.args['hash'][0])
-            setResolvedUrl(plugin.handle, True, listitem)
+            
         elif torr_ver == 1:
             listitem.setPath(Addon().getSettingString('torrserver_url')+"/torrent/play/?link="+plugin.args['hash'][0]+"&file="+str(int(plugin.args['stream_id'][0])))
-            setResolvedUrl(plugin.handle, True, listitem)
+            
         elif torr_ver == 2:
-            listitem.setPath(listitem.setPath(Addon().getSettingString('torrserver_url')+"/stream/fname?link="+plugin.args['hash'][0]+"&index="+str(int(plugin.args['stream_id'][0])+1)+"&play"))
-            setResolvedUrl(plugin.handle, True, listitem)
+            listitem.setPath(Addon().getSettingString('torrserver_url')+"/stream/fname?link="+plugin.args['hash'][0]+"&index="+str(int(plugin.args['stream_id'][0])+1)+"&play")
+        setResolvedUrl(plugin.handle, True, listitem)
 
 
 @plugin.route('/iptv/channels')

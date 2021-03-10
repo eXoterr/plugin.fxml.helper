@@ -20,13 +20,13 @@
     <platform>all</platform>
     <license>GPL-3.0-or-later</license>
     <source>https://github.com/eXoterr/plugin.fxml.helper</source>
-    <news>v1.2.0 (9/03/2021)
+    <news>v1.2.0 (10/03/2021)
       [new] forkplayer website login feature
       [new] static links for torrents
       [new] option to add stream, acestream or torrent content in library (Films only)
       [new] auto replace public acestream server with server from addon settings
       [new] initial support torrserver 1.2
-      [new] probably broken torrserver 1.1
+      [fix] bugs on some xml sites
       [improved] infohash extracting
       [improved] json parsing on some sites
     </news>
