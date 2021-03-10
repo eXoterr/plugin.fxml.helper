@@ -105,3 +105,19 @@ def fix_xml(xml_doc):
 
 def correct_spaces(data):
     return data.replace('/', '.')
+
+def get_warning(wid):
+    if wid == "adult":
+        return "Этот сайт может содержать ссылки на контент для взрослых! Вы уверены что хотите его открыть? (Вы можете отключить его в настройках)"
+
+def colorize(text):
+    if 'fhd' in text.lower():
+        return f"[COLOR lime]{text}[/COLOR]"
+    if 'hd' in text.lower():
+        return f"[COLOR yellow]{text}[/COLOR]"
+    if '4k' in text.lower():
+        return f"[COLOR aqua]{text}[/COLOR]"
+    if 'ads' in text.lower() or 'ad' in text.lower():
+        return f"[COLOR orangered]{text}[/COLOR]"
+    else:
+        return text

@@ -1,6 +1,6 @@
 from resources.lib import cfscrape
 import json
-from resources.lib.utils import clear_styles, get_page, do_search, extract_msg_from_alert, fix_xml
+from resources.lib.utils import clear_styles, get_page, do_search, extract_msg_from_alert, fix_xml, colorize
 import re
 from defusedxml.ElementTree import parse, fromstring
 from urllib.parse import urlencode, quote_plus
@@ -69,7 +69,7 @@ def parse_json(url, elements="", request="", page_type=""):
                 current_channel.update({"desc" : ""})
             if 'title' in channel:
                 if 'style' in channel and 'default' in channel['style'] and 'before' in channel['style']['default']:
-                    current_channel.update({"title" :  clear_styles(channel['title']) +" [" + clear_styles(channel['style']['default']['before']) + "]"})
+                    current_channel.update({"title" :  clear_styles(channel['title']) +" [" + colorize(clear_styles(channel['style']['default']['before'])) + "]"})
                 else:
                     current_channel.update({"title" : clear_styles(channel['title'])})
             elif 'details' in channel and channel['details'] != False:

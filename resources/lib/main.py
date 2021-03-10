@@ -3,7 +3,7 @@ from xbmcgui import ListItem, Dialog, NOTIFICATION_INFO, NOTIFICATION_ERROR, NOT
 from xbmcplugin import addDirectoryItem, endOfDirectory, setResolvedUrl
 from xbmcaddon import Addon
 from resources.lib.parsers import parse_json
-from resources.lib.utils import get_page, get_stream, correct_spaces
+from resources.lib.utils import get_page, get_stream, correct_spaces, get_warning
 import json
 import sys
 from xbmcvfs import translatePath
@@ -20,7 +20,7 @@ def index():
 
     listitem = ListItem("SpiderXML (search engine)")
     listitem.setArt({"icon" : "http://spiderxml.com/spidericon.png"})
-    addDirectoryItem(plugin.handle, plugin.url_for(open_json, url="http://spider.forkplayer.tv/search/?web=&onlyxml=1/", search=False), listitem=listitem, isFolder=True)
+    addDirectoryItem(plugin.handle, plugin.url_for(open_json, url="http://spiderxml.com/", warning="adult", search=False), listitem=listitem, isFolder=True)
     
     listitem = ListItem("Forkplayer.tv Account")
     listitem.setArt({"icon" : "http://forkplayer.tv/favicon.ico"})
@@ -109,10 +109,17 @@ def extract_and_play():
         setResolvedUrl(plugin.handle, True, listitem)
 
 
+@plugin.route('/desc')
+def show_desc():
+    Dialog().textviewer("Description", unquote_plus(plugin.args['desc'][0]))
+
 
 @plugin.route('/open_json')
 def open_json(request=''):
     print(plugin.args)
+    if 'warning' in plugin.args and plugin.args['warning'][0] != "":
+        if Dialog().yesno("Внимание!", get_warning(plugin.args['warning'][0])) != True:
+            return
     if 'elements' in plugin.args and len(plugin.args['elements']) > 0:
         page = parse_json(plugin.args['url'][0], elements=plugin.args['elements'], page_type="submenu")
         #plugin.args['url'][0] = "#"
@@ -133,12 +140,13 @@ def open_json(request=''):
             listitem.setArt({"poster" : item['poster']})
             listitem.setArt({"fanart" : item['background']})
             listitem.setInfo("video", {"plot" : item['desc']})
-            if 'icon' in item['icon'] and len(item['icon']) > 0:
+            if 'icon' in item and len(item['icon']) > 0:
                 icon = item['icon']
             else:
                 icon = ""
             listitem.addContextMenuItems([('Add as playlist', f'RunPlugin("plugin://plugin.fxml.helper/iptv/add?url={item["url"]}&handle={plugin.handle}")'),
-                                            ('Add to main menu', f'RunPlugin("plugin://plugin.fxml.helper/menu/add?url={item["url"]}&handle={plugin.handle}&name={item["title"]}&icon={icon}")')])
+                                            ('Add to main menu', f'RunPlugin("plugin://plugin.fxml.helper/menu/add?url={item["url"]}&handle={plugin.handle}&name={item["title"]}&icon={icon}")'),
+                                            ('Show description', f'RunPlugin("plugin://plugin.fxml.helper/desc?desc={quote_plus(item["desc"])}&handle={plugin.handle}")')])
             addDirectoryItem(plugin.handle, plugin.url_for(open_json, url=item['url'], search=False), listitem, isFolder=True)
         elif item['url_type'] == 'search':
             listitem = ListItem(item['title'])
@@ -296,7 +304,10 @@ def add_playlist():
 def add_menu_portal():
     url = plugin.args['url'][0]
     name = plugin.args['name'][0]
-    icon = plugin.args['icon'][0]
+    if 'icon' not in plugin.args:
+        icon = ""
+    else:
+        icon = plugin.args['icon'][0]
     menu_slots = []
     for slot in range(1, 8):
         current_slot = Addon().getSettingString('menu'+str(slot))

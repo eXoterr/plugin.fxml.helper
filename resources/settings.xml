@@ -6,17 +6,17 @@
     <category label="32004" visible="false">
         <setting label="32052" type="folder" id="library_folder" source="auto" option="writeable" default="special://profile"/>
         <setting label="32041" type="bool"   id="debug" default=""/>
+        <setting label="32053" type="bool"   id="search_enable" default=""/>
         <setting label="32042" type="text"   id="email" default=""/>
         <setting label="32050" type="text"   id="password" default="" option="hidden"/>
         <setting label="32051" type="action" action='RunPlugin("plugin://plugin.fxml.helper/do_auth")'/>
-        <setting label="32040" type="lsep"/>
-        <setting label="32048" type="text"   id="menu1" default=""/>
-        <setting label="32049" type="text"   id="menu2" default=""/>
-        <setting label="32043" type="text"   id="menu3" default=""/>
-        <setting label="32044" type="text"   id="menu4" default=""/>
-        <setting label="32045" type="text"   id="menu5" default=""/>
-        <setting label="32046" type="text"   id="menu6" default=""/>
-        <setting label="32047" type="text"   id="menu7" default=""/>
+        <setting label="32048" type="text"   id="menu1" default="" visible="false"/>
+        <setting label="32049" type="text"   id="menu2" default="" visible="false"/>
+        <setting label="32043" type="text"   id="menu3" default="" visible="false"/>
+        <setting label="32044" type="text"   id="menu4" default="" visible="false"/>
+        <setting label="32045" type="text"   id="menu5" default="" visible="false"/>
+        <setting label="32046" type="text"   id="menu6" default="" visible="false"/>
+        <setting label="32047" type="text"   id="menu7" default="" visible="false"/>
     </category>
     <category label="32002">
         <setting label="32021" type="bool" id="merge" default="false"/>
