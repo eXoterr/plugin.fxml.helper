@@ -36,9 +36,11 @@ def get_page(url):
         page = scraper.get(url, params={"box_mac" : get_mac(), "box_hardware" : "Kodi FXML Helper", "initial" : f"aForkPlayer2.5|{get_mac()}|Android sdk 25|androidapi|0"}, cookies=cookie)
     #print("requesting page: \""+page.url+"\"")
     raw_page = page.text
-    return [raw_page, page.url]
+    return [raw_page, page.url, url]
 
-def get_stream(url, order=0, page_type=''):
+def get_stream(url, order=0, page_type='', suborder=False, submenu=False):
+    print("url is: ")
+    print(url)
     scraper = cfscrape.create_scraper()
     if '{' in url:  
             res_raw = json.loads(url)
@@ -50,24 +52,28 @@ def get_stream(url, order=0, page_type=''):
     else:
         page = scraper.get(url, params={"box_mac" : get_mac(), "box_hardware" : "Kodi FXML Helper", "initial" : f"aForkPlayer2.5|{get_mac()}|Android sdk 25|androidapi|0"})
         raw_page = page.text
-    if page_type == 'json':
-        if 'channels' in json.loads(raw_page):
-            return json.loads(raw_page)['channels'][int(order)]['stream_url']
-        else:
-            res_raw = json.loads(raw_page)
-            resolutions = []
-            for res in res_raw.keys():
-                resolutions.append(res_raw[res])
-            #print(type(resolutions[int(order)]))
-            return resolutions[int(order)]['url']
-    elif page_type == 'xml':
-        return fromstring(raw_page).findall('channel')[int(order)].find('stream_url').text
-    elif page_type == "m3u":
-        return url
+    if suborder != False:
+        return json.loads(raw_page)['channels'][int(suborder)]['submenu'][int(order)]['stream_url']
     else:
-        url = get_page(url)
-        print(url)
-        return url[0]
+        print("suborder is: "+str(suborder))
+        if page_type == 'json':
+            if 'channels' in json.loads(raw_page):
+                return json.loads(raw_page)['channels'][int(order)]['stream_url']
+            else:
+                res_raw = json.loads(raw_page)
+                resolutions = []
+                for res in res_raw.keys():
+                    resolutions.append(res_raw[res])
+                #print(type(resolutions[int(order)]))
+                return resolutions[int(order)]['url']
+        elif page_type == 'xml':
+            return fromstring(raw_page).findall('channel')[int(order)].find('stream_url').text
+        elif page_type == "m3u":
+            return url
+        else:
+            url = get_page(url)
+            print(url)
+            return url[0]
 def do_search(url, request):
     if 'youtube.com' in url or 'youtu.be' in url:
         return '{"title" : "youtube not supported"}'
@@ -83,7 +89,7 @@ def do_search(url, request):
     else:
         page = scraper.get(url, params={"search" : request, "box_mac" : get_mac(), "box_hardware" : "Kodi FXML Helper", "initial" : f"aForkPlayer2.5|{get_mac()}|Android sdk 25|androidapi|0"}, cookies=cookie)
     raw_page = page.text
-    return [raw_page, page.url]
+    return [raw_page, page.url, url]
 
 def extract_msg_from_alert(msg):
     if re.match(r'alert\((.+)\)', msg):

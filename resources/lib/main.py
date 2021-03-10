@@ -90,6 +90,7 @@ def play():
 
 @plugin.route('/extract_and_play')
 def extract_and_play():
+    print('submenu item '+str(plugin.args['suborder_i'][0]))
     if int(plugin.args['url_type'][0]) == 2:
         files = json.loads(get_page(plugin.args['url'][0]))
         files_list = []
@@ -102,7 +103,10 @@ def extract_and_play():
     else:
         listitem = ListItem()
         print(f"extracting stream {plugin.args['order'][0]} from {plugin.args['url'][0]} with page type {plugin.args['page_type'][0]}")
-        listitem.setPath(get_stream(plugin.args['url'][0], plugin.args['order'][0], plugin.args['page_type'][0]))
+        if 'submenu' in plugin.args and bool(plugin.args['submenu'][0]) == True:
+            listitem.setPath(get_stream(plugin.args['url'][0], plugin.args['order'][0], plugin.args['page_type'][0], suborder=plugin.args['suborder_i'][0], submenu=True))
+        else:
+            listitem.setPath(get_stream(plugin.args['url'][0], plugin.args['order'][0], plugin.args['page_type'][0]))
         setResolvedUrl(plugin.handle, True, listitem)
 
 
@@ -111,8 +115,8 @@ def extract_and_play():
 def open_json(request=''):
     print(plugin.args)
     if 'elements' in plugin.args and len(plugin.args['elements']) > 0:
-        page = parse_json(plugin.args['url'][0], elements=plugin.args['elements'])
-        plugin.args['url'][0] = "#"
+        page = parse_json(plugin.args['url'][0], elements=plugin.args['elements'], page_type="submenu")
+        #plugin.args['url'][0] = "#"
     elif len(request) > 0:
         plugin.args['search'][0] = "False"
         page = parse_json(plugin.args['url'][0], request=request)
@@ -146,7 +150,7 @@ def open_json(request=''):
             listitem.setArt({"fanart" : item['background']})
             listitem.setArt({"poster" : item['poster']})
             listitem.setInfo("video", {"plot" : item['desc']})
-            addDirectoryItem(plugin.handle, plugin.url_for(open_json, url='submenu', search=False, elements=json.dumps(item['submenu'])), listitem, isFolder=True)
+            addDirectoryItem(plugin.handle, plugin.url_for(open_json, url=item['parent_page'], search=False, page_type="submenu", suborder=item['order'], elements=json.dumps(item['submenu'])), listitem, isFolder=True)
         elif item['url_type'] == 'none':
             # listitem = ListItem(item['title'])
             # listitem.setArt({"icon" : item['icon']})
@@ -165,7 +169,10 @@ def open_json(request=''):
             if item['page_type'] == "m3u":
                 addDirectoryItem(plugin.handle, plugin.url_for(play, url=item['url'], url_type=0), listitem=listitem, isFolder=False)
             else:
-                addDirectoryItem(plugin.handle, plugin.url_for(extract_and_play, url=item['parent_page'], order=item['order'] ,page_type=item['page_type'], url_type=0), listitem=listitem, isFolder=False)
+                if 'suborder' in plugin.args:
+                    addDirectoryItem(plugin.handle, plugin.url_for(extract_and_play, url=plugin.args['url'][0], order=item['order'], suborder_i=plugin.args['suborder'][0], page_type=item['page_type'], url_type=0, submenu=True), listitem=listitem, isFolder=False)
+                else:
+                    addDirectoryItem(plugin.handle, plugin.url_for(extract_and_play, url=item['parent_page'], order=item['order'], page_type=item['page_type'], url_type=0), listitem=listitem, isFolder=False)
         elif item['url_type'] == 'magnet':
             listitem = ListItem(item['title'])
             listitem.setArt({"icon" : item['icon']})

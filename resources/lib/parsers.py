@@ -6,8 +6,8 @@ from defusedxml.ElementTree import parse, fromstring
 from urllib.parse import urlencode, quote_plus
 from xbmcaddon import Addon
 
-def parse_json(url, elements="", request=""):
-    if url == 'submenu':
+def parse_json(url, elements="", request="", page_type=""):
+    if page_type == 'submenu':
         #print("elements---------=-")
         #print(elements)
 
@@ -15,20 +15,23 @@ def parse_json(url, elements="", request=""):
             page_data = json.loads(elements[0])
         else:
             page_data = [json.loads(elements[0]), url]
-        print("---page_data---")
-        print(page_data)
-        print(type(page_data[0]))
-        print(type(page_data[1]))
+        # print("---page_data---")
+        # print(page_data)
+        # print(type(page_data[0]))
+        # print(type(page_data[1]))
         parsed_page = page_data[0]
         parent_url = page_data[1]
+        
     elif request != "":
         page_data = do_search(url, request)
         parsed_page = page_data[0]
         parent_url = page_data[1]
+        currnet_url = page_data[2]
     else:
         page_data = get_page(url)
         parsed_page = page_data[0]
         parent_url = page_data[1]
+        currnet_url = page_data[2]
     
     if '<items>' in parsed_page or '<channels>' in parsed_page:
         parsed_page = parse_xml(parsed_page)
@@ -93,7 +96,7 @@ def parse_json(url, elements="", request=""):
                     #print("submenu type is " + str(type(channel['submenu'])))
                     # print(type(channel['submenu']))
                     # print(channel['submenu'])
-                    current_channel.update({"submenu" : {"channels" : channel['submenu']},  "url_type" : "submenu"})
+                    current_channel.update({"submenu" : {"channels" : channel['submenu']}, "parent_page" : currnet_url,  "url_type" : "submenu", "order" : current_channel_index})
                 elif len(channel['playlist_url']) == 0:
                     current_channel.update({"url_type" : "alert", "msg" : clear_styles(channel['description'])})
                 elif 'magnet:?xt=' in channel['playlist_url']:
@@ -167,6 +170,7 @@ def parse_json(url, elements="", request=""):
             else:
                 current_channel.update({"icon" : ""})
 
+            current_channel.update({"index" : current_channel_index})
             final_data.append(current_channel)
             current_channel_index += 1
         if 'next_page_url' in parsed_page and parsed_page['next_page_url'] is not None and len(parsed_page['next_page_url']) > 0:
