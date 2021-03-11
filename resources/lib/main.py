@@ -18,9 +18,10 @@ plugin = routing.Plugin()
 @plugin.route('/')
 def index():
 
-    listitem = ListItem("SpiderXML (search engine)")
-    listitem.setArt({"icon" : "http://spiderxml.com/spidericon.png"})
-    addDirectoryItem(plugin.handle, plugin.url_for(open_json, url="http://spiderxml.com/", warning="adult", search=False), listitem=listitem, isFolder=True)
+    if Addon().getSettingBool('search_enable') == True:
+        listitem = ListItem(f"SpiderXML {Addon().getLocalizedString(32054)}")
+        listitem.setArt({"icon" : "http://spiderxml.com/spidericon.png"})
+        addDirectoryItem(plugin.handle, plugin.url_for(open_json, url="http://spiderxml.com/", warning="adult", search=False), listitem=listitem, isFolder=True)
     
     listitem = ListItem("Forkplayer.tv Account")
     listitem.setArt({"icon" : "http://forkplayer.tv/favicon.ico"})
@@ -33,7 +34,7 @@ def index():
             menu_item = json.loads(menu_item_json)
             listitem = ListItem(menu_item['name']+" #"+str(i))
             listitem.setArt({"icon" : menu_item['icon']})
-            listitem.addContextMenuItems([("Remove from menu", f'RunPlugin("plugin://plugin.fxml.helper/menu/remove?id={str(i)}")')])
+            listitem.addContextMenuItems([(Addon().getLocalizedString(32055), f'RunPlugin("plugin://plugin.fxml.helper/menu/remove?id={str(i)}")')])
             addDirectoryItem(plugin.handle, plugin.url_for(open_json, url=menu_item['url'], search=False), listitem=listitem, isFolder=True)
         else:
             print(menu_item_json+"is equal 0")
@@ -77,7 +78,7 @@ def play():
         files_list = []
         for i in files['FileStats']:
             files_list.append(i['Path'])
-        file_id = Dialog().select('Choose a file to play', files_list)
+        file_id = Dialog().select(Addon().getLocalizedString(32056), files_list)
         listitem = ListItem()
         listitem.setPath(plugin.args['url'][0]+"&file="+str(file_id))
         setResolvedUrl(plugin.handle, True, listitem)
@@ -111,14 +112,14 @@ def extract_and_play():
 
 @plugin.route('/desc')
 def show_desc():
-    Dialog().textviewer("Description", unquote_plus(plugin.args['desc'][0]))
+    Dialog().textviewer(Addon().getLocalizedString(32057), unquote_plus(plugin.args['desc'][0]))
 
 
 @plugin.route('/open_json')
 def open_json(request=''):
     print(plugin.args)
     if 'warning' in plugin.args and plugin.args['warning'][0] != "":
-        if Dialog().yesno("Внимание!", get_warning(plugin.args['warning'][0])) != True:
+        if Dialog().yesno(Addon().getLocalizedString(32079), get_warning(plugin.args['warning'][0])) != True:
             return
     if 'elements' in plugin.args and len(plugin.args['elements']) > 0:
         page = parse_json(plugin.args['url'][0], elements=plugin.args['elements'], page_type="submenu")
@@ -130,7 +131,7 @@ def open_json(request=''):
         page = parse_json(plugin.args['url'][0])
     
     if plugin.args['search'][0] == "True":
-        return open_json(request=Dialog().input("Enter your data..."))
+        return open_json(request=Dialog().input(Addon().getLocalizedString(32058)))
     for item in page:
         #print(item)
         if item['url_type'] == 'link':
@@ -144,9 +145,9 @@ def open_json(request=''):
                 icon = item['icon']
             else:
                 icon = ""
-            listitem.addContextMenuItems([('Add as playlist', f'RunPlugin("plugin://plugin.fxml.helper/iptv/add?url={item["url"]}&handle={plugin.handle}")'),
-                                            ('Add to main menu', f'RunPlugin("plugin://plugin.fxml.helper/menu/add?url={item["url"]}&handle={plugin.handle}&name={item["title"]}&icon={icon}")'),
-                                            ('Show description', f'RunPlugin("plugin://plugin.fxml.helper/desc?desc={quote_plus(item["desc"])}&handle={plugin.handle}")')])
+            listitem.addContextMenuItems([(Addon().getLocalizedString(32059), f'RunPlugin("plugin://plugin.fxml.helper/iptv/add?url={item["url"]}&handle={plugin.handle}")'),
+                                            (Addon().getLocalizedString(32060), f'RunPlugin("plugin://plugin.fxml.helper/menu/add?url={item["url"]}&handle={plugin.handle}&name={item["title"]}&icon={icon}")'),
+                                            (Addon().getLocalizedString(32061), f'RunPlugin("plugin://plugin.fxml.helper/desc?desc={quote_plus(item["desc"])}&handle={plugin.handle}")')])
             addDirectoryItem(plugin.handle, plugin.url_for(open_json, url=item['url'], search=False), listitem, isFolder=True)
         elif item['url_type'] == 'search':
             listitem = ListItem(item['title'])
@@ -176,7 +177,7 @@ def open_json(request=''):
             listitem.setArt({"poster" : item['poster']})
             listitem.setProperty("IsPlayable", "true")
             listitem.setInfo("video", {"plot" : item['desc']})
-            listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["parent_page"]}&order={item["order"]}&page_type={item["page_type"]}&title={item["title"]}&item_type=stream&url_type=0")')])
+            listitem.addContextMenuItems([(Addon().getLocalizedString(32062), f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["parent_page"]}&order={item["order"]}&page_type={item["page_type"]}&title={item["title"]}&item_type=stream&url_type=0")')])
             if item['page_type'] == "m3u":
                 addDirectoryItem(plugin.handle, plugin.url_for(play, url=item['url'], url_type=0), listitem=listitem, isFolder=False)
             else:
@@ -192,22 +193,22 @@ def open_json(request=''):
             listitem.setProperty("IsPlayable", "true")
             listitem.setInfo("video", {"plot" : item['desc']})
             if Addon().getSettingInt('p2p_engine') == 0:
-                listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={quote_plus(item["title"])}&item_type=magnet&url_type=3")')])
+                listitem.addContextMenuItems([(Addon().getLocalizedString(32062), f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={quote_plus(item["title"])}&item_type=magnet&url_type=3")')])
                 addDirectoryItem(plugin.handle, plugin.url_for(play, url="plugin://plugin.video.elementum/play?uri="+item['url'], url_type=3), listitem=listitem, isFolder=False)
             elif Addon().getSettingInt('p2p_engine') == 1:
                 print(item)
                 if 'stream_id' in item:
-                    listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={quote_plus(item["title"])}&item_type=magnet&url_type=1")')])
+                    listitem.addContextMenuItems([(Addon().getLocalizedString(32062), f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={quote_plus(item["title"])}&item_type=magnet&url_type=1")')])
                     addDirectoryItem(plugin.handle, plugin.url_for(play_torr, hash=item['url'], url_type=1, stream_id=item['stream_id']), listitem=listitem, isFolder=False)
                 else:
-                    listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&title={quote_plus(item["title"])}&item_type=magnet&url_type=2")')])
+                    listitem.addContextMenuItems([(Addon().getLocalizedString(32062), f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&title={quote_plus(item["title"])}&item_type=magnet&url_type=2")')])
                     addDirectoryItem(plugin.handle, plugin.url_for(play_torr, hash=item['url'], url_type=2), listitem=listitem, isFolder=False)
             elif Addon().getSettingInt('p2p_engine') == 2:
                 if 'stream_id' in item:
-                    listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={quote_plus(item["title"])}&item_type=magnet&url_type=1")')])
+                    listitem.addContextMenuItems([(Addon().getLocalizedString(32062), f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={quote_plus(item["title"])}&item_type=magnet&url_type=1")')])
                     addDirectoryItem(plugin.handle, plugin.url_for(play_torr, hash=item['url'], url_type=1, stream_id=item['stream_id']), listitem=listitem, isFolder=False)
                 else:
-                    listitem.addContextMenuItems([('Add to kodi library', f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&title={quote_plus(item["title"])}&item_type=magnet&url_type=2")')])
+                    listitem.addContextMenuItems([(Addon().getLocalizedString(32062), f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&title={quote_plus(item["title"])}&item_type=magnet&url_type=2")')])
                     addDirectoryItem(plugin.handle, plugin.url_for(play_torr, hash=item['url'], url_type=2), listitem=listitem, isFolder=False)
         elif item['url_type'] == 'ace':
             listitem = ListItem(item['title'])
@@ -247,7 +248,7 @@ def play_torr():
             files_list = []
             for i in files['FileStats']:
                 files_list.append(i['Path'])
-            file_id = Dialog().select('Choose a file to play', files_list)
+            file_id = Dialog().select(Addon().getLocalizedString(32063), files_list)
             listitem = ListItem()
             listitem.setPath(Addon().getSettingString("torrserver_url")+"/torrent/play/?link="+plugin.args["hash"][0]+"&file="+str(file_id))
             
@@ -256,7 +257,7 @@ def play_torr():
             files_list = []
             for i in files['file_stats']:
                 files_list.append(i['path'])
-            file_id = Dialog().select('Choose a file to play', files_list)
+            file_id = Dialog().select((Addon().getLocalizedString(32063), files_list))
             listitem = ListItem()
             listitem.setPath(Addon().getSettingString('torrserver_url')+"/stream/fname?link="+plugin.args['hash'][0]+"&index="+str(file_id + 1)+"&play")
         setResolvedUrl(plugin.handle, True, listitem)
@@ -293,11 +294,11 @@ def add_playlist():
             menu_slots.append(current_slot)
         else:
             menu_slots.append(f"Playlist {str(slot)}")
-    order = str(Dialog().select("Select playlist slot", menu_slots) + 1)
-    if Dialog().yesno("Are you sure?", f"Playlist will be added on slot {order}") == False:
+    order = str(Dialog().select(Addon().getLocalizedString(32078), menu_slots) + 1)
+    if Dialog().yesno(Addon().getLocalizedString(32064), f"{Addon().getLocalizedString(32065)} {order}") == False:
         return False
     Addon().setSetting(id=str('iptv'+order), value=url)
-    Dialog().notification("Success", "playlist added to slot " + order, NOTIFICATION_INFO)
+    Dialog().notification(Addon().getLocalizedString(32066), f"{Addon().getLocalizedString(32077)} " + order, NOTIFICATION_INFO)
 
 
 @plugin.route('/menu/add')
@@ -317,17 +318,17 @@ def add_menu_portal():
         else:
             menu_slots.append(f"Menu slot {str(slot)}")
     order = str(Dialog().select("Select menu slot", menu_slots) + 1)
-    if Dialog().yesno("Are you sure?", f"Portal will be added on slot {order}") == False:
+    if Dialog().yesno(Addon().getLocalizedString(32064), f"{Addon().getLocalizedString(32065)} {order}") == False:
         return False
     Addon().setSetting(id=str('menu'+order), value=json.dumps({"url" : url, "name" : name, "icon" : icon}))
-    Dialog().notification("Success", "\""+name + "\" added to menu slot " + order, NOTIFICATION_INFO)
+    Dialog().notification(Addon().getLocalizedString(32066), "\""+name + f"\" {Addon().getLocalizedString(32067)} " + order, NOTIFICATION_INFO)
 
 
 @plugin.route('/menu/remove')
 def rem_menu_portal():
     order = plugin.args['id'][0]
     Addon().setSetting(id=str('menu'+order), value="")
-    Dialog().notification("Success", "\""+order + "\" slot was removed", NOTIFICATION_INFO)
+    Dialog().notification(Addon().getLocalizedString(32066), "\""+order + f"\" {Addon().getLocalizedString(32068)}", NOTIFICATION_INFO)
 
 @plugin.route('/alert')
 def alert():
@@ -339,19 +340,19 @@ def auth():
     login = Addon().getSettingString('email')
     password = Addon().getSettingString('password')
     if len(login) == 0 or len(password) == 0:
-        return  Dialog().notification("Save settings!", "Enter your login and pass and save settings before trying to auth!", icon=NOTIFICATION_ERROR)
+        return  Dialog().notification(Addon().getLocalizedString(32075), Addon().getLocalizedString(32076), icon=NOTIFICATION_ERROR)
     response = json.loads(get_page(f"http://forkplayer.tv/xml/account.php?act=submit&login={login}&password={password}")[0])
     if 'error' in response:
-        Dialog().notification("Error!", response['error'], icon=NOTIFICATION_ERROR)
+        Dialog().notification(Addon().getLocalizedString(32070), response['error'], icon=NOTIFICATION_ERROR)
     else:
         Addon().setSetting('fork_cookie', response['setcookie']['sid'])
-        Dialog().notification("Success", "Authorised!", icon=NOTIFICATION_INFO)
+        Dialog().notification(Addon().getLocalizedString(32066), Addon().getLocalizedString(32069), icon=NOTIFICATION_INFO)
 
 @plugin.route('/library/add')
 def add_to_lib():
     item_type = plugin.args['item_type'][0]
-    if Dialog().yesno("Change default title?", f"Current title is \"{unquote_plus(plugin.args['title'][0])}\"") == True:
-        title = Dialog().input("Enter new title...")
+    if Dialog().yesno(Addon().getLocalizedString(32071), f"{Addon().getLocalizedString(32071)} \"{unquote_plus(plugin.args['title'][0])}\"") == True:
+        title = Dialog().input(Addon().getLocalizedString(32074))
     else:
         title = unquote_plus(plugin.args['title'][0])
     if item_type == "stream":
@@ -365,7 +366,7 @@ def add_to_lib():
     f.write(url)
     f.close()
     executebuiltin('UpdateLibrary("video")')
-    Dialog().notification("Success", "Film added to kodi library", NOTIFICATION_INFO)
+    Dialog().notification(Addon().getLocalizedString(32066), Addon().getLocalizedString(32073), NOTIFICATION_INFO)
 
 
 def run():

@@ -6,7 +6,7 @@
     <category label="32004" visible="false">
         <setting label="32052" type="folder" id="library_folder" source="auto" option="writeable" default="special://profile"/>
         <setting label="32041" type="bool"   id="debug" default=""/>
-        <setting label="32053" type="bool"   id="search_enable" default=""/>
+        <setting label="32053" type="bool"   id="search_enable" default="true"/>
         <setting label="32042" type="text"   id="email" default=""/>
         <setting label="32050" type="text"   id="password" default="" option="hidden"/>
         <setting label="32051" type="action" action='RunPlugin("plugin://plugin.fxml.helper/do_auth")'/>

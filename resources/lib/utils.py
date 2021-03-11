@@ -108,7 +108,7 @@ def correct_spaces(data):
 
 def get_warning(wid):
     if wid == "adult":
-        return "Этот сайт может содержать ссылки на контент для взрослых! Вы уверены что хотите его открыть? (Вы можете отключить его в настройках)"
+        return Addon().getLocalizedString(32080)
 
 def colorize(text):
     if 'fhd' in text.lower():
