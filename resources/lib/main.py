@@ -132,6 +132,8 @@ def open_json(request=''):
     
     if plugin.args['search'][0] == "True":
         return open_json(request=Dialog().input(Addon().getLocalizedString(32058)))
+    if isinstance(page, bool):
+        return 
     for item in page:
         #print(item)
         if item['url_type'] == 'link':

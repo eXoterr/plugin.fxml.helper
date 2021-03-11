@@ -158,6 +158,10 @@ msgctxt "#32087"
 msgid "Proxy"
 msgstr "Прокси"
 
+msgctxt "#32088"
+msgid "Page decoding error. Probably site blocked by provider"
+msgstr "Ошибка декодирования страницы. Возможно сайт заблокирован провайдером."
+
 msgctxt "#32051"
 msgid "[Login in]"
 msgstr "[Войти]"

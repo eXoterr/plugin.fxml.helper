@@ -162,6 +162,10 @@ msgctxt "#32087"
 msgid "Proxy"
 msgstr "Proxy"
 
+msgctxt "#32088"
+msgid "Page decoding error. Probably site blocked by provider"
+msgstr "Page decoding error. Probably site blocked by provider"
+
 
 msgctxt "#32051"
 msgid "[Login in]"

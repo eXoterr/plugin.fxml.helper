@@ -5,6 +5,7 @@ import re
 from defusedxml.ElementTree import parse, fromstring
 from urllib.parse import urlencode, quote_plus
 from xbmcaddon import Addon
+from xbmcgui import Dialog
 
 def parse_json(url, elements="", request="", page_type=""):
     if page_type == 'submenu':
@@ -39,7 +40,10 @@ def parse_json(url, elements="", request="", page_type=""):
     elif '{' in parsed_page:
         #print(parsed_page)
         print(parent_url)
-        parsed_page = json.loads(parsed_page)
+        try:
+            parsed_page = json.loads(parsed_page)
+        except json.JSONDecodeError:
+            return Dialog().ok("error", Addon().getLocalizedString(32088) + f"[ {url} ]")
         page_type = 'json'
     elif '#EXTM3U' in parsed_page:
         parsed_page = parse_m3u(parsed_page)
