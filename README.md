@@ -12,7 +12,7 @@
 * Проигрывание торрент файлов с сайтов через движки Elementum и Torrserver
 * Добавление сайтов в главное меню аддона
 
-## [Скачать](https://raw.githubusercontent.com/eXoterr/kodi_pub/master/repository.exoterr/repository.exoterr-1.0.0.zip)
+## [Скачать](https://raw.githubusercontent.com/eXoterr/kodi_pub/master/repository.exoterr/repository.exoterr-1.0.1.zip)
 
 **Известные баги**:
 * Некоторые xml страницы могут открываться некорректно или не открываться вовсе
