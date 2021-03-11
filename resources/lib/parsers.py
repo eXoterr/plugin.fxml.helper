@@ -37,17 +37,17 @@ def parse_json(url, elements="", request="", page_type=""):
     if '<items>' in parsed_page or '<channels>' in parsed_page:
         parsed_page = parse_xml(parsed_page)
         page_type = 'xml'
+    elif '#EXTM3U' in parsed_page:
+        parsed_page = parse_m3u(parsed_page)
+        page_type = 'm3u'
     elif '{' in parsed_page:
         #print(parsed_page)
         print(parent_url)
         try:
             parsed_page = json.loads(parsed_page)
         except json.JSONDecodeError:
-            return Dialog().ok("error", Addon().getLocalizedString(32088) + f"[ {url} ]")
+            return Dialog().ok("Error", Addon().getLocalizedString(32088) + f"[{url}]")
         page_type = 'json'
-    elif '#EXTM3U' in parsed_page:
-        parsed_page = parse_m3u(parsed_page)
-        page_type = 'm3u'
     elif isinstance(parsed_page, dict):
         page_type = 'json'
 
