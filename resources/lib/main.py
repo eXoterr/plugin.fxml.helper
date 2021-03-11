@@ -148,7 +148,7 @@ def open_json(request=''):
             else:
                 icon = ""
             listitem.addContextMenuItems([(Addon().getLocalizedString(32059), f'RunPlugin("plugin://plugin.fxml.helper/iptv/add?url={item["url"]}&handle={plugin.handle}")'),
-                                            (Addon().getLocalizedString(32060), f'RunPlugin("plugin://plugin.fxml.helper/menu/add?url={item["url"]}&handle={plugin.handle}&name={item["title"]}&icon={icon}")'),
+                                            (Addon().getLocalizedString(32060), f'RunPlugin("plugin://plugin.fxml.helper/menu/add?url={item["url"]}&handle={plugin.handle}&name={quote_plus(item["title"])}&icon={icon}")'),
                                             (Addon().getLocalizedString(32061), f'RunPlugin("plugin://plugin.fxml.helper/desc?desc={quote_plus(item["desc"])}&handle={plugin.handle}")')])
             addDirectoryItem(plugin.handle, plugin.url_for(open_json, url=item['url'], search=False), listitem, isFolder=True)
         elif item['url_type'] == 'search':
@@ -306,7 +306,7 @@ def add_playlist():
 @plugin.route('/menu/add')
 def add_menu_portal():
     url = plugin.args['url'][0]
-    name = plugin.args['name'][0]
+    name = unquote_plus(plugin.args['name'][0])
     if 'icon' not in plugin.args:
         icon = ""
     else:
