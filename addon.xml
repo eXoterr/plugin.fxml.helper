@@ -20,7 +20,7 @@
     <platform>all</platform>
     <license>GPL-3.0-or-later</license>
     <source>https://github.com/eXoterr/plugin.fxml.helper</source>
-    <news>v1.2.1 (10/03/2021)
+    <news>v1.2.1 (11/03/2021)
       [new] forkplayer.tv website login feature
       [new] static links for torrents
       [new] option to add stream or torrent content in library (Films only)
