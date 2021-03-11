@@ -180,7 +180,7 @@ msgstr "P2P"
 
 msgctxt "#32004"
 msgid "General"
-msgstr "Главные"
+msgstr "Общие"
 
 msgctxt "#32040"
 msgid "Main menu"
