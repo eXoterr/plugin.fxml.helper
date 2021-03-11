@@ -111,6 +111,8 @@ def parse_json(url, elements="", request="", page_type=""):
                     current_channel.update({"url" : quote_plus('magnet'+channel['playlist_url']), "url_type" : "magnet"})
                 elif re.match(r'alert\((.+)\)|cmd:info\((.+)\);', channel['playlist_url']) is not None:
                     current_channel.update({"url_type" : "alert", "msg" : extract_msg_from_alert(clear_styles(channel['playlist_url']))})
+                elif 'payd_login' in channel['playlist_url'] or 'payd_password' in channel['playlist_url']:
+                    current_channel.update({"url_type" : "alert", "msg" : Addon().getLocalizedString(32090), "url" : ""})
                 elif channel['playlist_url'] == "cmdSetSync":
                     current_channel.update({"url_type" : "alert", "msg" : "command link, ignoring"})
                 else:

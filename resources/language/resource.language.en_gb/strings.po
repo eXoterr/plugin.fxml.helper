@@ -166,6 +166,13 @@ msgctxt "#32088"
 msgid "Page decoding error. Probably site blocked by provider"
 msgstr "Page decoding error. Probably site blocked by provider"
 
+msgctxt "#32089"
+msgid "Authorisation required"
+msgstr "Authorisation required"
+
+msgctxt "#32090"
+msgid "Enter your login and password in addon's settings, then click "[Login in]""
+msgstr "Enter your login and password in addon's settings, then click "[Login in]""
 
 msgctxt "#32051"
 msgid "[Login in]"

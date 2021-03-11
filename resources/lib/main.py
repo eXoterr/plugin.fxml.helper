@@ -23,9 +23,12 @@ def index():
         listitem.setArt({"icon" : "http://spiderxml.com/spidericon.png"})
         addDirectoryItem(plugin.handle, plugin.url_for(open_json, url="http://spider.forkplayer.tv/search/?web=&onlyxml=1/", warning="adult", search=False), listitem=listitem, isFolder=True)
     
-    listitem = ListItem("Forkplayer.tv Account")
-    listitem.setArt({"icon" : "http://forkplayer.tv/favicon.ico"})
-    addDirectoryItem(plugin.handle, plugin.url_for(open_json, url="http://forkplayer.tv/xml/account.php?act=info/", search=False), listitem=listitem, isFolder=True)
+    if len(Addon().getSettingString('fork_cookie')) > 0:
+        listitem = ListItem("Forkplayer.tv Account")
+        listitem.setArt({"icon" : "http://forkplayer.tv/favicon.ico"})
+        addDirectoryItem(plugin.handle, plugin.url_for(open_json, url="http://forkplayer.tv/xml/account.php?act=info/", search=False), listitem=listitem, isFolder=True)
+
+    
 
     for i in range(1, 8):
         #print(Addon().getSettingString('menu'+str(i)))
@@ -118,6 +121,10 @@ def show_desc():
 @plugin.route('/open_json')
 def open_json(request=''):
     print(plugin.args)
+    if 'url' in plugin.args and plugin.args['url'][0] == "http://forkplayer.tv/xml/account.php?act=info/":
+        if len(Addon().getSettingString('fork_cookie')) == 0:
+            Dialog().ok(Addon().getLocalizedString(32089), Addon().getLocalizedString(32090))
+            return 
     if 'warning' in plugin.args and plugin.args['warning'][0] != "":
         if Dialog().yesno(Addon().getLocalizedString(32079), get_warning(plugin.args['warning'][0])) != True:
             return
@@ -150,7 +157,11 @@ def open_json(request=''):
             listitem.addContextMenuItems([(Addon().getLocalizedString(32059), f'RunPlugin("plugin://plugin.fxml.helper/iptv/add?url={item["url"]}&handle={plugin.handle}")'),
                                             (Addon().getLocalizedString(32060), f'RunPlugin("plugin://plugin.fxml.helper/menu/add?url={item["url"]}&handle={plugin.handle}&name={quote_plus(item["title"])}&icon={icon}")'),
                                             (Addon().getLocalizedString(32061), f'RunPlugin("plugin://plugin.fxml.helper/desc?desc={quote_plus(item["desc"])}&handle={plugin.handle}")')])
-            addDirectoryItem(plugin.handle, plugin.url_for(open_json, url=item['url'], search=False), listitem, isFolder=True)
+            if item['url'] == "payd_login" or item['url'] == "payd_password" or item['url'] == "http://forkplayer.tv/xml/account.php?act=register" or item['url'] == "http://forkplayer.tv/xml/account.php?act=remind":
+                Dialog().ok(Addon().getLocalizedString(32089), Addon().getLocalizedString(32090))
+                return
+            else:
+                addDirectoryItem(plugin.handle, plugin.url_for(open_json, url=item['url'], search=False), listitem, isFolder=True)
         elif item['url_type'] == 'search':
             listitem = ListItem(item['title'])
             listitem.setArt({"icon" : item['icon']})
