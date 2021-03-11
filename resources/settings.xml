@@ -10,6 +10,10 @@
         <setting label="32042" type="text"   id="email" default=""/>
         <setting label="32050" type="text"   id="password" default="" option="hidden"/>
         <setting label="32051" type="action" action='RunPlugin("plugin://plugin.fxml.helper/do_auth")'/>
+        <setting label="32087" type="lsep" />
+        <setting label="32081" type="bool"   id="enable_proxy" default=""/>
+        <setting label="32085" type="select" id="proxy_type" lvalues="32082|32083|32084" />
+        <setting label="32086" type="text"   id="proxy_url" default=""/>
         <setting label="32048" type="text"   id="menu1" default="" visible="false"/>
         <setting label="32049" type="text"   id="menu2" default="" visible="false"/>
         <setting label="32043" type="text"   id="menu3" default="" visible="false"/>

@@ -134,6 +134,35 @@ msgctxt "#32080"
 msgid "This site may contain adult content! Are you sure want to open it? (this link can be disabled in settings)"
 msgstr "This site may contain adult content! Are you sure want to open it? (this link can be disabled in settings)"
 
+msgctxt "#32081"
+msgid "Use proxy"
+msgstr "Use proxy"
+
+msgctxt "#32082"
+msgid "HTTP"
+msgstr "HTTP"
+
+msgctxt "#32083"
+msgid "Socks 4"
+msgstr "Socks 4"
+
+msgctxt "#32084"
+msgid "Socks 5"
+msgstr "Socks 5"
+
+msgctxt "#32085"
+msgid "Proxy type"
+msgstr "Proxy type"
+
+msgctxt "#32086"
+msgid "Proxy address"
+msgstr "Proxy address"
+
+msgctxt "#32087"
+msgid "Proxy"
+msgstr "Proxy"
+
+
 msgctxt "#32051"
 msgid "[Login in]"
 msgstr "[Login in]"

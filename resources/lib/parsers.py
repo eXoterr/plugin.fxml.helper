@@ -37,6 +37,8 @@ def parse_json(url, elements="", request="", page_type=""):
         parsed_page = parse_xml(parsed_page)
         page_type = 'xml'
     elif '{' in parsed_page:
+        #print(parsed_page)
+        print(parent_url)
         parsed_page = json.loads(parsed_page)
         page_type = 'json'
     elif '#EXTM3U' in parsed_page:

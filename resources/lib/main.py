@@ -21,7 +21,7 @@ def index():
     if Addon().getSettingBool('search_enable') == True:
         listitem = ListItem(f"SpiderXML {Addon().getLocalizedString(32054)}")
         listitem.setArt({"icon" : "http://spiderxml.com/spidericon.png"})
-        addDirectoryItem(plugin.handle, plugin.url_for(open_json, url="http://spiderxml.com/", warning="adult", search=False), listitem=listitem, isFolder=True)
+        addDirectoryItem(plugin.handle, plugin.url_for(open_json, url="http://spider.forkplayer.tv/search/?web=&onlyxml=1/", warning="adult", search=False), listitem=listitem, isFolder=True)
     
     listitem = ListItem("Forkplayer.tv Account")
     listitem.setArt({"icon" : "http://forkplayer.tv/favicon.ico"})
@@ -78,7 +78,7 @@ def play():
         files_list = []
         for i in files['FileStats']:
             files_list.append(i['Path'])
-        file_id = Dialog().select(Addon().getLocalizedString(32056), files_list)
+        file_id = Dialog().select(Addon().getLocalizedString(32063), files_list)
         listitem = ListItem()
         listitem.setPath(plugin.args['url'][0]+"&file="+str(file_id))
         setResolvedUrl(plugin.handle, True, listitem)

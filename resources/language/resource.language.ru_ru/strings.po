@@ -19,128 +19,152 @@ msgstr "Пароль"
 
 msgctxt "#32052"
 msgid "[Library folder]"
-msgstr "[Library folder]"
+msgstr "[Папка библиотеки]"
 
 msgctxt "#32053"
 msgid "Enable Search (spiderxml)"
-msgstr "Enable Search (spiderxml)"
+msgstr "Включить поиск (spiderxml)"
 
 msgctxt "#32054"
 msgid "(search engine)"
-msgstr "(search engine)"
+msgstr "(поисковая система)"
 
 msgctxt "#32055"
 msgid "Remove from menu"
-msgstr "Remove from menu"
-
-msgctxt "#32056"
-msgid "Remove from menu"
-msgstr "Remove from menu"
+msgstr "Удалить из меню"
 
 msgctxt "#32057"
 msgid "Description"
-msgstr "Description"
+msgstr "Описание"
 
 msgctxt "#32058"
 msgid "Enter your data..."
-msgstr "Enter your data..."
+msgstr "Введите свой запрос..."
 
 msgctxt "#32059"
 msgid "Add as playlist"
-msgstr "Add as playlist"
+msgstr "Добавить как плейлист"
 
 msgctxt "#32060"
 msgid "Add to main menu"
-msgstr "Add to main menu"
+msgstr "Добавить на главное меню"
 
 msgctxt "#32061"
 msgid "Show description"
-msgstr "Show description"
+msgstr "Показать описание"
 
 msgctxt "#32062"
 msgid "Add to kodi library"
-msgstr "Add to kodi library"
+msgstr "Добавить в библиотеку Kodi"
 
 
 msgctxt "#32063"
 msgid "Choose a file to play"
-msgstr "Choose a file to play"
+msgstr "Выберите файл"
 
 msgctxt "#32064"
 msgid "Are you sure?"
-msgstr "Are you sure?"
+msgstr "Вы уверены?"
 
 msgctxt "#32065"
 msgid "Playlist will be added on slot"
-msgstr "Playlist will be added on slot"
+msgstr "Плейлист будет добавлен на слот"
 
 msgctxt "#32066"
 msgid "Success"
-msgstr "Success"
+msgstr "Успешно!"
 
 msgctxt "#32067"
 msgid "added to menu slot"
-msgstr "added to menu slot"
+msgstr "добавлен в главное меню"
 
 msgctxt "#32068"
 msgid "slot was removed"
-msgstr "slot was removed"
+msgstr "слот был удален"
 
 msgctxt "#32069"
 msgid "Authorised!"
-msgstr "Authorised!"
+msgstr "Авторизован!"
 
 msgctxt "#32070"
 msgid "Error!"
-msgstr "Error!"
+msgstr "Ошибка!"
 
 msgctxt "#32071"
 msgid "Change default title?"
-msgstr "Change default title?"
+msgstr "Изменить стандартный заголовок?"
 
 msgctxt "#32072"
 msgid "Current title is"
-msgstr "Current title is"
+msgstr "Текущий заголовок"
 
 msgctxt "#32073"
 msgid "Film added to kodi library"
-msgstr "Film added to kodi library"
+msgstr "Фильм добавлен в библиотеку Kodi"
 
 msgctxt "#32074"
 msgid "Enter new title..."
-msgstr "Enter new title..."
+msgstr "Введите новый заголовок..."
 
 msgctxt "#32075"
 msgid "Save settings!"
-msgstr "Save settings!"
+msgstr "Сохраните настройки!"
 
 msgctxt "#32076"
 msgid "Enter your login and pass and save settings before trying to auth!"
-msgstr "Enter your login and pass and save settings before trying to auth!"
+msgstr "Введите свой логин и пароль и сохраните настройки перед тем как пытаться войти!"
 
 msgctxt "#32077"
 msgid "playlist added to slot"
-msgstr "playlist added to slot"
+msgstr "плейлист добавлен на слот"
 
 msgctxt "#32078"
 msgid "Select playlist slot"
-msgstr "Select playlist slot"
+msgstr "Выберите слот плейлиста"
 
 msgctxt "#32079"
 msgid "Warning!"
-msgstr "Warning!"
+msgstr "Внимание!"
 
 msgctxt "#32080"
 msgid "This site may contain adult content! Are you sure want to open it? (this link can be disabled in settings)"
-msgstr "This site may contain adult content! Are you sure want to open it? (this link can be disabled in settings)"
+msgstr "Данный сайт может содержать контент для взрослых! Вы уверены что хотите открыть его? (данный пункт может быть выключен в настройках)"
+
+msgctxt "#32081"
+msgid "Use proxy"
+msgstr "Использовать прокси"
+
+msgctxt "#32082"
+msgid "HTTP"
+msgstr "HTTP"
+
+msgctxt "#32083"
+msgid "Socks 4"
+msgstr "Socks 4"
+
+msgctxt "#32084"
+msgid "Socks 5"
+msgstr "Socks 5"
+
+msgctxt "#32085"
+msgid "Proxy type"
+msgstr "Тип прокси"
+
+msgctxt "#32086"
+msgid "Proxy address"
+msgstr "Адрес прокси"
+
+msgctxt "#32087"
+msgid "Proxy"
+msgstr "Прокси"
 
 msgctxt "#32051"
 msgid "[Login in]"
-msgstr "[Login in]"
+msgstr "[Войти]"
 
 msgctxt "#32001"
 msgid "Playlists"
-msgstr "Playlists"
+msgstr "Плейлисты"
 
 msgctxt "#32002"
 msgid "IPTV"
@@ -152,20 +176,20 @@ msgstr "P2P"
 
 msgctxt "#32004"
 msgid "General"
-msgstr "General"
+msgstr "Главные"
 
 msgctxt "#32040"
 msgid "Main menu"
-msgstr "Main menu"
+msgstr "Главное меню"
 
 msgctxt "#32018"
 msgid "Active playlist"
-msgstr "Active playlist"
+msgstr "Активный плейлист"
 
 
 msgctxt "#32041"
 msgid "Debug Mode"
-msgstr "Debug Mode"
+msgstr "Режим отладки"
 
 msgctxt "#32042"
 msgid "E-mail"
@@ -173,7 +197,7 @@ msgstr "E-mail"
 
 msgctxt "#32031"
 msgid "Torrent engine"
-msgstr "Torrent engine"
+msgstr "Торрент движок"
 
 msgctxt "#32032"
 msgid "Elementum"
@@ -185,11 +209,11 @@ msgstr "TorrServer"
 
 msgctxt "#32034"
 msgid "TorrServer Url"
-msgstr "TorrServer Url"
+msgstr "TorrServer адрес"
 
 msgctxt "#32035"
 msgid "AceStream Url"
-msgstr "AceStream Url"
+msgstr "AceStream адрес"
 
 msgctxt "#32036"
 msgid "AceStream"
@@ -201,64 +225,60 @@ msgstr "TorrServer Matrix (v 1.2)"
 
 msgctxt "#32021"
 msgid "Merge playlists"
-msgstr "Merge playlists"
+msgstr "Объеденить плейлисты"
 
 msgctxt "#32011"
 msgid "Playlist 1"
-msgstr "Playlist 1"
+msgstr "Плейлист 1"
 
 msgctxt "#32012"
 msgid "Playlist 2"
-msgstr "Playlist 2"
+msgstr "Плейлист 2"
 
 msgctxt "#32013"
 msgid "Playlist 3"
-msgstr "Playlist 3"
+msgstr "Плейлист 3"
 
 msgctxt "#32014"
 msgid "Playlist 4"
-msgstr "Playlist 4"
+msgstr "Плейлист 4"
 
 msgctxt "#32015"
 msgid "Playlist 5"
-msgstr "Playlist 5"
+msgstr "Плейлист 5"
 
 msgctxt "#32016"
 msgid "Playlist 6"
-msgstr "Playlist 6"
+msgstr "Плейлист 6"
 
 msgctxt "#32017"
 msgid "Playlist 7"
-msgstr "Playlist 7"
-
-msgctxt "#32004"
-msgid "Favourite Portals"
-msgstr "Favourite Portals"
+msgstr "Плейлист 7"
 
 msgctxt "#32048"
 msgid "Portal 1"
-msgstr "Portal 1"
+msgstr "Портал 1"
 
 msgctxt "#32049"
 msgid "Portal 2"
-msgstr "Portal 2"
+msgstr "Портал 2"
 
 msgctxt "#32043"
 msgid "Portal 3"
-msgstr "Portal 3"
+msgstr "Портал 3"
 
 msgctxt "#32044"
 msgid "Portal 4"
-msgstr "Portal 4"
+msgstr "Портал 4"
 
 msgctxt "#32045"
 msgid "Portal 5"
-msgstr "Portal 5"
+msgstr "Портал 5"
 
 msgctxt "#32046"
 msgid "Portal 6"
-msgstr "Portal 6"
+msgstr "Портал 6"
 
 msgctxt "#32047"
 msgid "Portal 7"
-msgstr "Portal 7"
+msgstr "Портал 7"
