@@ -99,8 +99,8 @@ msgid "Current title is"
 msgstr "Текущий заголовок"
 
 msgctxt "#32073"
-msgid "Film added to kodi library"
-msgstr "Фильм добавлен в библиотеку Kodi"
+msgid "Content added to kodi library"
+msgstr "Контент добавлен в библиотеку Kodi"
 
 msgctxt "#32074"
 msgid "Enter new title..."
@@ -169,6 +169,10 @@ msgstr "Необходима авторизация!"
 msgctxt "#32090"
 msgid "Enter your login and password in addon's settings, then click "[Login in]""
 msgstr "Введите логин и пароль в настройках аддона, затем нажмите "[Войти]""
+
+msgctxt "#32091"
+msgid "Specify season number"
+msgstr "Укажите номер сезона"
 
 msgctxt "#32051"
 msgid "[Login in]"

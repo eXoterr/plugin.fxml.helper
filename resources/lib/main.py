@@ -3,7 +3,7 @@ from xbmcgui import ListItem, Dialog, NOTIFICATION_INFO, NOTIFICATION_ERROR, NOT
 from xbmcplugin import addDirectoryItem, endOfDirectory, setResolvedUrl
 from xbmcaddon import Addon
 from resources.lib.parsers import parse_json
-from resources.lib.utils import get_page, get_stream, correct_spaces, get_warning
+from resources.lib.utils import get_page, get_stream, correct_spaces, generate_static_url
 import json
 import sys
 from xbmcvfs import translatePath
@@ -28,7 +28,9 @@ def index():
         listitem.setArt({"icon" : "http://forkplayer.tv/favicon.ico"})
         addDirectoryItem(plugin.handle, plugin.url_for(open_json, url="http://forkplayer.tv/xml/account.php?act=info/", search=False), listitem=listitem, isFolder=True)
 
-    
+    listitem = ListItem("Update shows")
+    listitem.setArt({"icon" : "http://forkplayer.tv/favicon.ico"})
+    addDirectoryItem(plugin.handle, plugin.url_for(open_json, url="http://forkplayer.tv/xml/account.php?act=info/", search=False), listitem=listitem, isFolder=False)
 
     for i in range(1, 8):
         #print(Addon().getSettingString('menu'+str(i)))
@@ -157,6 +159,7 @@ def open_json(request=''):
             listitem.addContextMenuItems([(Addon().getLocalizedString(32059), f'RunPlugin("plugin://plugin.fxml.helper/iptv/add?url={item["url"]}&handle={plugin.handle}")'),
                                             (Addon().getLocalizedString(32060), f'RunPlugin("plugin://plugin.fxml.helper/menu/add?url={item["url"]}&handle={plugin.handle}&name={quote_plus(item["title"])}&icon={icon}")'),
                                             (Addon().getLocalizedString(32061), f'RunPlugin("plugin://plugin.fxml.helper/desc?desc={quote_plus(item["desc"])}&handle={plugin.handle}")')])
+            listitem.addContextMenuItems([(Addon().getLocalizedString(32062), f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&title={item["title"]}&item_type=series")')])
             if item['url'] == "payd_login" or item['url'] == "payd_password" or item['url'] == "http://forkplayer.tv/xml/account.php?act=register" or item['url'] == "http://forkplayer.tv/xml/account.php?act=remind":
                 Dialog().ok(Addon().getLocalizedString(32089), Addon().getLocalizedString(32090))
                 return
@@ -248,42 +251,44 @@ def play_torr():
     torr_ver = Addon().getSettingInt('p2p_engine')
     print("hash is: " + plugin.args['hash'][0])
     print("torr ver is: "+str(torr_ver))
+    url = re.sub(r'\&dn\=.+', '', plugin.args['hash'][0])
     if '&title=' in plugin.args['hash'][0]:
         print("truncated \"title\" form hash")
         plugin.args['hash'][0] = re.sub(r'(\&title\=.+)', '', plugin.args['hash'][0])
     if 'url_type' in plugin.args and int(plugin.args['url_type'][0]) == 2:
         if torr_ver == 0:
             listitem = ListItem()
-            listitem.setPath("plugin://plugin.video.elementum/play?uri="+plugin.args['hash'][0])
+            listitem.setPath("plugin://plugin.video.elementum/play?uri="+url)
             
         elif torr_ver == 1:
-            files = json.loads(get_page(Addon().getSettingString('torrserver_url')+'/torrent/play/?link='+plugin.args['hash'][0])[0])
+            files = json.loads(get_page(Addon().getSettingString('torrserver_url')+'/torrent/play/?link='+url)[0])
             files_list = []
             for i in files['FileStats']:
                 files_list.append(i['Path'])
             file_id = Dialog().select(Addon().getLocalizedString(32063), files_list)
             listitem = ListItem()
-            listitem.setPath(Addon().getSettingString("torrserver_url")+"/torrent/play/?link="+plugin.args["hash"][0]+"&file="+str(file_id))
+            listitem.setPath(Addon().getSettingString("torrserver_url")+"/torrent/play/?link="+url+"&file="+str(file_id))
             
         elif torr_ver == 2:
-            files = json.loads(get_page(Addon().getSettingString('torrserver_url')+'/stream/fname?link='+plugin.args['hash'][0]+"&stat")[0])
+            files = json.loads(get_page(Addon().getSettingString('torrserver_url')+'/stream/fname?link='+url+"&stat")[0])
             files_list = []
             for i in files['file_stats']:
                 files_list.append(i['path'])
             file_id = Dialog().select((Addon().getLocalizedString(32063), files_list))
             listitem = ListItem()
-            listitem.setPath(Addon().getSettingString('torrserver_url')+"/stream/fname?link="+plugin.args['hash'][0]+"&index="+str(file_id + 1)+"&play")
+            listitem.setPath(Addon().getSettingString('torrserver_url')+"/stream/fname?link="+url+"&index="+str(file_id + 1)+"&play")
         setResolvedUrl(plugin.handle, True, listitem)
     else:
         listitem = ListItem()
         if torr_ver == 0:
-            listitem.setPath("plugin://plugin.video.elementum/play?uri="+plugin.args['hash'][0])
+            url = re.sub(r'\&dn\=.+', '', url)
+            listitem.setPath("plugin://plugin.video.elementum/play?uri="+url+"&index="+plugin.args['stream_id'][0])
             
         elif torr_ver == 1:
-            listitem.setPath(Addon().getSettingString('torrserver_url')+"/torrent/play/?link="+plugin.args['hash'][0]+"&file="+str(int(plugin.args['stream_id'][0])))
+            listitem.setPath(Addon().getSettingString('torrserver_url')+"/torrent/play/?link="+url+"&file="+str(int(plugin.args['stream_id'][0])))
             
         elif torr_ver == 2:
-            listitem.setPath(Addon().getSettingString('torrserver_url')+"/stream/fname?link="+plugin.args['hash'][0]+"&index="+str(int(plugin.args['stream_id'][0])+1)+"&play")
+            listitem.setPath(Addon().getSettingString('torrserver_url')+"/stream/fname?link="+url+"&index="+str(int(plugin.args['stream_id'][0])+1)+"&play")
         setResolvedUrl(plugin.handle, True, listitem)
 
 
@@ -364,23 +369,66 @@ def auth():
 @plugin.route('/library/add')
 def add_to_lib():
     item_type = plugin.args['item_type'][0]
+    folder = Addon().getSettingString('library_folder')
     if Dialog().yesno(Addon().getLocalizedString(32071), f"{Addon().getLocalizedString(32071)} \"{unquote_plus(plugin.args['title'][0])}\"") == True:
         title = Dialog().input(Addon().getLocalizedString(32074))
     else:
         title = unquote_plus(plugin.args['title'][0])
-    if item_type == "stream":
-        url = f"plugin://plugin.fxml.helper/extract_and_play?order={plugin.args['order'][0]}&url={plugin.args['url'][0]}&page_type={plugin.args['page_type'][0]}&url_type=0"
-    elif item_type == "magnet":
-        url = f"plugin://plugin.fxml.helper/play_t?url_type={plugin.args['url_type'][0]}&hash={plugin.args['url'][0]}&url_type={plugin.args['url_type'][0]}"
-    elif item_type == 'ace':
-        url = f"plugin://plugin.fxml.helper/play?url={plugin.args['url_type'][0]}"
-    folder = Addon().getSettingString('library_folder')
-    f = open(translatePath(os.path.join(folder, correct_spaces(title+".strm"))), "w")
-    f.write(url)
-    f.close()
-    executebuiltin('UpdateLibrary("video")')
+    if item_type == "series":
+        shows_folder = os.path.join(folder, "shows")
+        files = parse_json(plugin.args['url'][0])
+        current_season = 1
+        current_episode = 1
+        remembered_season = False
+        subfoldered_seasons = False
+        if files[0]['url'] != "link":
+            subfoldered_seasons == False
+            current_season = Dialog().numeric(0, Addon().getLocalizedString(32091))
+            show_folder = os.path.join(bytes(shows_folder ,encoding="utf8"), bytes(correct_spaces(title), encoding="utf8"))
+            if not os.path.isdir(show_folder):
+                os.mkdir(show_folder)
+            season_folder = os.path.join(show_folder, bytes("Season "+str(current_season), encoding="utf8"))
+            if not os.path.isdir(season_folder):
+                os.mkdir(season_folder)
+        for ifile in files:
+            if subfoldered_seasons == False:
+                f = open(os.path.join(season_folder, bytes(f"S{str(current_season)}E{current_episode}"+".strm", encoding="utf8")), "w")
+                f.write(generate_static_url(ifile['url_type'], ifile['url'], 1, order=int(ifile['index'])))
+                f.close()
+                current_episode += 1
+
+
+    else:
+        folder = os.path.join(folder, "movies")
+        if not os.path.isdir(folder):
+                    #print(season_folder)
+                    os.mkdir(folder)
+        f = open(os.path.join(bytes(folder, encoding="utf8"), bytes(title+".strm", encoding="utf8")), "w")
+        if 'url_type' in plugin.args:
+            urltype = plugin.args['url_type'][0]
+        else:
+            urltype = 0
+        if 'page_type' in plugin.args:
+            pagetype = plugin.args['page_type'][0]
+        else:
+            pagetype = "json"
+        
+        if 'suborder' in plugin.args:
+            f.write(generate_static_url(plugin.args['item_type'][0], plugin.args['url'][0], int(plugin.args['order'][0]), urltype, pagetype, subindex=int(plugin.args['suborder'][0])))
+        else:
+            f.write(generate_static_url(plugin.args['item_type'][0], plugin.args['url'][0], int(plugin.args['order'][0]), urltype, pagetype))
+        f.close()
+
+    
+    
+    
+    
+    #executebuiltin('UpdateLibrary("video")')
     Dialog().notification(Addon().getLocalizedString(32066), Addon().getLocalizedString(32073), NOTIFICATION_INFO)
 
 
 def run():
     plugin.run()
+
+def service():
+    pass

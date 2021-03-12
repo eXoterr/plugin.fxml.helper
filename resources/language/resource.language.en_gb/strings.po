@@ -104,7 +104,7 @@ msgstr "Current title is"
 
 msgctxt "#32073"
 msgid "Film added to kodi library"
-msgstr "Film added to kodi library"
+msgstr "Content added to kodi library"
 
 msgctxt "#32074"
 msgid "Enter new title..."
@@ -173,6 +173,10 @@ msgstr "Authorisation required"
 msgctxt "#32090"
 msgid "Enter your login and password in addon's settings, then click "[Login in]""
 msgstr "Enter your login and password in addon's settings, then click "[Login in]""
+
+msgctxt "#32091"
+msgid "Specify season number"
+msgstr "Specify season number"
 
 msgctxt "#32051"
 msgid "[Login in]"

@@ -1,7 +1,7 @@
 import re
 from resources.lib import cfscrape
 import json
-from urllib.parse import urlencode, urlparse
+from urllib.parse import urlencode, urlparse, quote_plus
 from uuid import getnode 
 from defusedxml.cElementTree import fromstring
 from xbmcaddon import Addon
@@ -134,7 +134,19 @@ def fix_xml(xml_doc):
     return re.sub(r'(\s+\&\s+)|(\&nbsp;)|(\&gt;)|(\&copy;)|(\&quot;)|(\&rsquo;)|(\<background-image\>.+\<\/background-image\>)|(\<typeList\>.+\<\/typeList\>)', ' ', xml_doc)
 
 def correct_spaces(data):
-    return data.replace('/', '.')
+    return data.replace('/', ' ')
+
+def generate_static_url(item_type, url, url_type=0, order=0, page_type='json', subindex=False):
+    if item_type == "stream":
+        if subindex != False:
+            url = f"plugin://plugin.fxml.helper/extract_and_play?order={order}&suborder_i={subindex}&submenu=True&url={url}&page_type={page_type}&url_type=0"
+        else:
+            url = f"plugin://plugin.fxml.helper/extract_and_play?order={order}&url={url}&page_type={page_type}&url_type=0"
+    elif item_type == "magnet":
+        url = f"plugin://plugin.fxml.helper/play_t?url_type={url_type}&hash={quote_plus(url)}&stream_id={order}"
+    elif item_type == 'ace':
+        url = f"plugin://plugin.fxml.helper/play?url={url_type}"
+    return url
 
 def get_warning(wid):
     if wid == "adult":
