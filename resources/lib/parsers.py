@@ -22,6 +22,7 @@ def parse_json(url, elements="", request="", page_type=""):
         # print(type(page_data[1]))
         parsed_page = page_data[0]
         parent_url = page_data[1]
+        current_url = parent_url
         
     elif request != "":
         page_data = do_search(url, request)
