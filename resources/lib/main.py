@@ -381,7 +381,7 @@ def add_to_lib():
         current_episode = 1
         remembered_season = False
         subfoldered_seasons = False
-        if files[0]['url'] != "link":
+        if files[0]['url_type'] != "link":
             subfoldered_seasons == False
             current_season = Dialog().numeric(0, Addon().getLocalizedString(32091))
             show_folder = os.path.join(bytes(shows_folder ,encoding="utf8"), bytes(correct_spaces(title), encoding="utf8"))
