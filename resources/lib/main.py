@@ -172,7 +172,7 @@ def open_json(request=''):
             listitem.addContextMenuItems([(Addon().getLocalizedString(32059), f'RunPlugin("plugin://plugin.fxml.helper/iptv/add?url={item["url"]}&handle={plugin.handle}")'),
                                             (Addon().getLocalizedString(32060), f'RunPlugin("plugin://plugin.fxml.helper/menu/add?url={item["url"]}&handle={plugin.handle}&name={quote_plus(item["title"])}&icon={icon}")'),
                                             (Addon().getLocalizedString(32061), f'RunPlugin("plugin://plugin.fxml.helper/desc?desc={quote_plus(item["desc"])}&handle={plugin.handle}")')])
-            listitem.addContextMenuItems([(Addon().getLocalizedString(32062), f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&title={item["title"]}&item_type=series")')])
+            #listitem.addContextMenuItems([(Addon().getLocalizedString(32062), f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&title={item["title"]}&item_type=series")')])
             if item['url'] == "payd_login" or item['url'] == "payd_password" or item['url'] == "http://forkplayer.tv/xml/account.php?act=register" or item['url'] == "http://forkplayer.tv/xml/account.php?act=remind":
                 Dialog().ok(Addon().getLocalizedString(32089), Addon().getLocalizedString(32090))
                 return
