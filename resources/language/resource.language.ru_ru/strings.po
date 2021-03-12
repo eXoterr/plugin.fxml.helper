@@ -171,8 +171,8 @@ msgid "Enter your login and password in addon's settings, then click "[Login in]
 msgstr "Введите логин и пароль в настройках аддона, затем нажмите "[Войти]""
 
 msgctxt "#32091"
-msgid "Specify season number"
-msgstr "Укажите номер сезона"
+msgid "Custom url"
+msgstr "Вести пользовательскую ссылку"
 
 msgctxt "#32051"
 msgid "[Login in]"

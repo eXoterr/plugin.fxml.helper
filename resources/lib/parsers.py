@@ -23,7 +23,6 @@ def parse_json(url, elements="", request="", page_type=""):
         parsed_page = page_data[0]
         parent_url = page_data[1]
         current_url = parent_url
-        
     elif request != "":
         page_data = do_search(url, request)
         parsed_page = page_data[0]
@@ -35,6 +34,15 @@ def parse_json(url, elements="", request="", page_type=""):
         parent_url = page_data[1]
         currnet_url = page_data[2]
     
+    #todo
+    # if "Передать ваш ForkPlayer ID" in parsed_page:
+    #     url = re.findall(r"(http:\/\/.+\')|(https:\/\/.+\')", parsed_page)[0].replace("'", '')
+    #     page_data = get_page(url)
+    #     print("response ::")
+    #     print(page_data)
+    #     parent_url = page_data[1]
+    #     currnet_url = page_data[2]
+
     if '<items>' in parsed_page or '<channels>' in parsed_page:
         parsed_page = parse_xml(parsed_page)
         page_type = 'xml'
@@ -63,6 +71,9 @@ def parse_json(url, elements="", request="", page_type=""):
     final_data = []
     current_channel_index = 0
     #print(parsed_page)
+
+
+
     if 'channels' in parsed_page and parsed_page['channels'] is not None:
             
         #print(parse_elements)

@@ -44,6 +44,9 @@ def index():
         else:
             print(menu_item_json+"is equal 0")
 
+    listitem = ListItem(f"{Addon().getLocalizedString(32091)}")
+    listitem.setArt({"icon" : ""})
+    addDirectoryItem(plugin.handle, plugin.url_for(go), listitem=listitem, isFolder=True)
 
     # listitem = ListItem("SpiderXML")
     # listitem.setArt({"icon" : "http://spiderxml.com/spidericon.png"})
@@ -75,6 +78,10 @@ def index():
     
     endOfDirectory(plugin.handle)
 
+
+@plugin.route('/go_to')
+def go():
+    return open_json(Dialog().input(Addon().getLocalizedString(32091)))
 
 @plugin.route('/play')
 def play():
@@ -134,8 +141,14 @@ def open_json(request=''):
         page = parse_json(plugin.args['url'][0], elements=plugin.args['elements'], page_type="submenu")
         #plugin.args['url'][0] = "#"
     elif len(request) > 0:
-        plugin.args['search'][0] = "False"
-        page = parse_json(plugin.args['url'][0], request=request)
+        if 'search' in plugin.args:
+            plugin.args['search'][0] = "False"
+        if 'url' not in plugin.args:
+            req_url = request
+            plugin.args['search'] = ["False"]
+            page = parse_json(req_url)
+        else:
+            page = parse_json(plugin.args['url'][0], request=request)
     else:
         page = parse_json(plugin.args['url'][0])
     
@@ -193,7 +206,8 @@ def open_json(request=''):
             listitem.setArt({"poster" : item['poster']})
             listitem.setProperty("IsPlayable", "true")
             listitem.setInfo("video", {"plot" : item['desc']})
-            listitem.addContextMenuItems([(Addon().getLocalizedString(32062), f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["parent_page"]}&order={item["order"]}&page_type={item["page_type"]}&title={item["title"]}&item_type=stream&url_type=0")')])
+            listitem.addContextMenuItems([(Addon().getLocalizedString(32062), f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["parent_page"]}&order={item["order"]}&page_type={item["page_type"]}&title={item["title"]}&item_type=stream&url_type=0")'),
+            (Addon().getLocalizedString(32061), f'RunPlugin("plugin://plugin.fxml.helper/desc?desc={quote_plus(item["desc"])}&handle={plugin.handle}")')])
             if item['page_type'] == "m3u":
                 addDirectoryItem(plugin.handle, plugin.url_for(play, url=item['url'], url_type=0), listitem=listitem, isFolder=False)
             else:
@@ -208,6 +222,7 @@ def open_json(request=''):
             listitem.setArt({"fanart" : item['background']})
             listitem.setProperty("IsPlayable", "true")
             listitem.setInfo("video", {"plot" : item['desc']})
+            listitem.addContextMenuItems([(Addon().getLocalizedString(32061), f'RunPlugin("plugin://plugin.fxml.helper/desc?desc={quote_plus(item["desc"])}&handle={plugin.handle}")')])
             if Addon().getSettingInt('p2p_engine') == 0:
                 listitem.addContextMenuItems([(Addon().getLocalizedString(32062), f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["url"]}&order={item["stream_id"]}&title={quote_plus(item["title"])}&item_type=magnet&url_type=3")')])
                 addDirectoryItem(plugin.handle, plugin.url_for(play, url="plugin://plugin.video.elementum/play?uri="+item['url'], url_type=3), listitem=listitem, isFolder=False)
@@ -351,7 +366,7 @@ def rem_menu_portal():
 @plugin.route('/alert')
 def alert():
     print(plugin.args)
-    Dialog().ok(plugin.args['title'][0], str(plugin.args['msg'][0]))
+    Dialog().textviewer(plugin.args['title'][0], str(plugin.args['msg'][0]))
 
 @plugin.route('/do_auth')
 def auth():

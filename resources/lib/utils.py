@@ -10,9 +10,9 @@ from xbmcgui import Dialog
 
 def clear_styles(text):
     text = re.sub(r'(<style .?\>|.+<\/style>)|(<.*?>)', ' ', text, flags=re.S) 
-    text = text.replace('\n', '')
-    text = text.replace('\r', '')
-    text = text.replace('\r\n', '')
+    # text = text.replace('\n', '')
+    # text = text.replace('\r', '')
+    # text = text.replace('\r\n', '')
     text = text.replace('Установите Acestream или Torrserve', '') #fork-portal
     text = text.replace('Установите Ace Stream или Torrserve', '') #fork-portal
     text = re.sub(r' +', ' ', text)
@@ -42,9 +42,9 @@ def get_page(url):
     else:
         proxy = {}
     if len(Addon().getSettingString('email')) > 0:
-        page = scraper.get(url, params={"box_mac" : get_mac(), "box_hardware" : "Kodi FXML Helper", "box_user" : Addon().getSettingString('email'), "initial" : f"aForkPlayer2.5|{get_mac()}|Android sdk 25|androidapi|0"}, cookies=cookie, proxies=proxy)
+        page = scraper.get(url, params={"box_mac" : get_mac(), "box_hardware" : "Kodi FXML Helper", "box_user" : Addon().getSettingString('email')}, cookies=cookie, proxies=proxy)
     else:
-        page = scraper.get(url, params={"box_mac" : get_mac(), "box_hardware" : "Kodi FXML Helper", "initial" : f"aForkPlayer2.5|{get_mac()}|Android sdk 25|androidapi|0"}, cookies=cookie, proxies=proxy)
+        page = scraper.get(url, params={"box_mac" : get_mac(), "box_hardware" : "Kodi FXML Helper"}, cookies=cookie, proxies=proxy)
     #print("requesting page: \""+page.url+"\"")
     raw_page = page.text
     return [raw_page, page.url, url]
@@ -71,7 +71,7 @@ def get_stream(url, order=0, page_type='', suborder=False, submenu=False):
             #print(type(resolutions[int(order)]))
             return resolutions[int(order)]['url']
     else:
-        page = scraper.get(url, params={"box_mac" : get_mac(), "box_hardware" : "Kodi FXML Helper", "initial" : f"aForkPlayer2.5|{get_mac()}|Android sdk 25|androidapi|0"}, proxies=proxy)
+        page = scraper.get(url, params={"box_mac" : get_mac(), "box_hardware" : "Kodi FXML Helper"}, proxies=proxy)
         raw_page = page.text
     if suborder != False:
         return json.loads(raw_page)['channels'][int(suborder)]['submenu'][int(order)]['stream_url']
@@ -116,9 +116,9 @@ def do_search(url, request):
         proxy = {}
     #print("requesting page: \""+page.url+"\"")
     if len(Addon().getSettingString('email')) > 0:
-        page = scraper.get(url, params={"search" : request, "box_mac" : get_mac(), "box_hardware" : "Kodi FXML Helper", "box_user" : Addon().getSettingString('email'), "initial" : f"aForkPlayer2.5|{get_mac()}|Android sdk 25|androidapi|0"}, cookies=cookie, proxies=proxy)
+        page = scraper.get(url, params={"search" : request, "box_mac" : get_mac(), "box_hardware" : "Kodi FXML Helper", "box_user" : Addon().getSettingString('email')}, cookies=cookie, proxies=proxy)
     else:
-        page = scraper.get(url, params={"search" : request, "box_mac" : get_mac(), "box_hardware" : "Kodi FXML Helper", "initial" : f"aForkPlayer2.5|{get_mac()}|Android sdk 25|androidapi|0"}, cookies=cookie, proxies=proxy)
+        page = scraper.get(url, params={"search" : request, "box_mac" : get_mac(), "box_hardware" : "Kodi FXML Helper"}, cookies=cookie, proxies=proxy)
     raw_page = page.text
     return [raw_page, page.url, url]
 

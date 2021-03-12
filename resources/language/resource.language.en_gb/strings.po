@@ -175,8 +175,8 @@ msgid "Enter your login and password in addon's settings, then click "[Login in]
 msgstr "Enter your login and password in addon's settings, then click "[Login in]""
 
 msgctxt "#32091"
-msgid "Specify season number"
-msgstr "Specify season number"
+msgid "Custom url"
+msgstr "Custom url"
 
 msgctxt "#32051"
 msgid "[Login in]"
