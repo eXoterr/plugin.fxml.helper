@@ -178,6 +178,10 @@ msgctxt "#32091"
 msgid "Custom url"
 msgstr "Custom url"
 
+msgctxt "#32092"
+msgid "TorrServer Module (recommended)"
+msgstr "TorrServer Module (recommended)"
+
 msgctxt "#32051"
 msgid "[Login in]"
 msgstr "[Login in]"
