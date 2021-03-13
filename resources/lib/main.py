@@ -121,7 +121,11 @@ def extract_and_play():
 
 @plugin.route('/desc')
 def show_desc():
-    Dialog().textviewer(Addon().getLocalizedString(32057), unquote_plus(plugin.args['desc'][0]))
+    if 'desc' not in plugin.args:
+        desc = "none"
+    else:
+        desc = plugin.args['desc'][0]
+    Dialog().textviewer(Addon().getLocalizedString(32057), unquote_plus(desc))
 
 
 @plugin.route('/open_json')
@@ -155,6 +159,8 @@ def open_json(request=''):
         return 
     for item in page:
         #print(item)
+        if not 'desc' in item:
+            item.update({"desc" : "None"})
         if item['url_type'] == 'link':
             #print('render started')
             listitem = ListItem(item['title'])
