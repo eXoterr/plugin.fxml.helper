@@ -318,7 +318,7 @@ def play_torr():
         # elif torr_ver == 3:
         #     url = re.sub(r'\&dn\=.+', '', url)
         #     listitem.setPath("plugin://plugin.video.torrserve/?action=play_now&magnet="+url+"&selFile="+str(int(plugin.args['stream_id'][0])+1))
-        # setResolvedUrl(plugin.handle, True, listitem)
+        setResolvedUrl(plugin.handle, True, listitem)
 
 
 @plugin.route('/iptv/channels')
