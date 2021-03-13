@@ -203,7 +203,7 @@ def open_json(request=''):
             listitem.setArt({"poster" : item['poster']})
             listitem.setProperty("IsPlayable", "true")
             listitem.setInfo("video", {"plot" : item['desc']})
-            #listitem.addContextMenuItems([(Addon().getLocalizedString(32062), f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["parent_page"]}&order={item["order"]}&page_type={item["page_type"]}&title={item["title"]}&item_type=stream&url_type=0")'),
+            listitem.addContextMenuItems([#(Addon().getLocalizedString(32062), f'RunPlugin("plugin://plugin.fxml.helper/library/add?url={item["parent_page"]}&order={item["order"]}&page_type={item["page_type"]}&title={item["title"]}&item_type=stream&url_type=0")'),
             (Addon().getLocalizedString(32061), f'RunPlugin("plugin://plugin.fxml.helper/desc?desc={quote_plus(item["desc"])}&handle={plugin.handle}")')])
             if item['page_type'] == "m3u":
                 addDirectoryItem(plugin.handle, plugin.url_for(play, url=item['url'], url_type=0), listitem=listitem, isFolder=False)
